@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>工具 ツール · ⭐NullMe⭐</title>
+  <meta name="description" content="自己写的一些顺手的无用小工具、脚本、外部服务。慢慢攒。">
+  <meta property="og:title" content="工具 ツール · ⭐NullMe⭐">
+  <meta property="og:description" content="自己写的一些顺手的无用小工具、脚本、外部服务。慢慢攒。">
+  <link rel="icon" href="../assets/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="../assets/style.css">
+  <script>
+    (function () {
+      try {
+        var t = localStorage.getItem('theme');
+        if (!t) t = matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+        document.documentElement.setAttribute('data-theme', t);
+      } catch (e) {}
+      document.documentElement.classList.add('js');
+    })();
+  </script>
+</head>
+<body>
+  <a class="sr-only" href="#main">跳到正文</a>
+  <header class="nav">
+    <div class="wrap nav-inner">
+      <a class="brand" href="../index.html">⭐NullMe⭐<span class="brand-dot"></span></a>
+      <nav class="nav-links">
+        <a href="../tools/" class="is-active" aria-current="page"><span class="nav-en">TOOLS</span><span class="nav-jp">ツール</span></a>
+        <a href="../project/"><span class="nav-en">PROJECT</span><span class="nav-jp">プロジェクト</span></a>
+        <a href="../myinterest/"><span class="nav-en">MY INTEREST</span><span class="nav-jp">興味</span></a>
+        <a href="../work/"><span class="nav-en">WORK</span><span class="nav-jp">じむ</span></a>
+        <a href="../about.html"><span class="nav-en">ABOUT</span><span class="nav-jp">について</span></a>
+        <button class="theme-toggle" type="button" data-theme-toggle aria-label="切换深浅色">
+          <span class="icon-sun" aria-hidden="true">☀</span><span class="icon-moon" aria-hidden="true">☾</span>
+        </button>
+      </nav>
+    </div>
+  </header>
+  <main id="main">
+
+<div class="wrap">
+  <header class="page-head">
+    <p class="page-kicker">TOOLS · ツール</p>
+    <h1>工具</h1>
+    <p class="page-intro">自己写的一些顺手的无用小工具、脚本、外部服务。慢慢攒。</p>
+  </header>
+  <div class="list">
+    <a class="item reveal" href="/tools/rich-editor.html" target="_blank" rel="noopener">
+        <div class="item-meta">2026.10.27</div>
+        <div>
+          <h3>HTML 编辑器</h3>
+          <p>一个在浏览器里直接改 HTML 的小工具，改完存成文件，不用装任何东西。</p>
+        </div>
+        <div class="item-side">前端 / 小工具</div>
+      </a>
+  </div>
+</div>
+  </main>
+  <script src="../assets/app.js" defer></script>
+</body>
+</html>

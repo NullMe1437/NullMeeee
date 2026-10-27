@@ -1,0 +1,147 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>⭐NullMe⭐</title>
+  <meta name="description" content="秋風吹地百草乾，華容碧影生晚寒。">
+  <meta property="og:title" content="⭐NullMe⭐">
+  <meta property="og:description" content="秋風吹地百草乾，華容碧影生晚寒。">
+  <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="assets/style.css">
+  <script>
+    (function () {
+      try {
+        var t = localStorage.getItem('theme');
+        if (!t) t = matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+        document.documentElement.setAttribute('data-theme', t);
+      } catch (e) {}
+      document.documentElement.classList.add('js');
+    })();
+  </script>
+</head>
+<body>
+  <a class="sr-only" href="#main">跳到正文</a>
+  <header class="nav">
+    <div class="wrap nav-inner">
+      <a class="brand" href="index.html">⭐NullMe⭐<span class="brand-dot"></span></a>
+      <nav class="nav-links">
+        <a href="tools/"><span class="nav-en">TOOLS</span><span class="nav-jp">ツール</span></a>
+        <a href="project/"><span class="nav-en">PROJECT</span><span class="nav-jp">プロジェクト</span></a>
+        <a href="myinterest/"><span class="nav-en">MY INTEREST</span><span class="nav-jp">興味</span></a>
+        <a href="work/"><span class="nav-en">WORK</span><span class="nav-jp">じむ</span></a>
+        <a href="about.html"><span class="nav-en">ABOUT</span><span class="nav-jp">について</span></a>
+        <button class="theme-toggle" type="button" data-theme-toggle aria-label="切换深浅色">
+          <span class="icon-sun" aria-hidden="true">☀</span><span class="icon-moon" aria-hidden="true">☾</span>
+        </button>
+      </nav>
+    </div>
+  </header>
+  <main id="main">
+
+<section class="hero">
+  <div class="hero-media">
+    <img src="assets/img/hero-1920.webp"
+         srcset="assets/img/hero-768.webp 768w, assets/img/hero-1280.webp 1280w, assets/img/hero-1920.webp 1920w"
+         sizes="100vw" alt="" width="1920" height="1082" fetchpriority="high">
+  </div>
+  <div class="hero-inner">
+    <div class="hero-main">
+      <p class="eyebrow">Personal site · 2026</p>
+      <h1 class="hero-title hero-greeting">
+        <span>你好。</span>
+        <span>這裏是⭐NullMe⭐的個人site。</span>
+      </h1>
+    </div>
+    <aside class="hero-poem" aria-label="李賀《開愁歌》">
+    <p class="poem-sign">開愁歌　李賀</p>
+    <p>秋風吹地百草乾</p>
+    <p>華容碧影生晚寒</p>
+    <p>我當二十不得意</p>
+    <p>一心愁謝如枯蘭</p>
+    <p>衣如飛鶉馬如狗</p>
+    <p>臨岐擊劍生銅吼</p>
+    <p>旗亭下馬解秋衣</p>
+    <p>請貰宜陽一壺酒</p>
+    <p>壺中喚天雲不開</p>
+    <p>白晝萬里閑淒迷</p>
+    <p>主人勸我養心骨</p>
+    <p>莫受俗物相填豗</p>
+  </aside>
+  </div>
+  <p class="hero-caption">題圖 · さんふらわあ</p>
+</section>
+
+<div class="wrap">
+  <section class="section">
+    <div class="section-head reveal">
+      <span class="section-num">01</span>
+      <h2>入口</h2>
+      <span class="section-rule"></span>
+    </div>
+    <div class="entry-grid">
+      <a class="entry-card reveal" href="tools/">
+        <span class="num">TOOLS<i>ツール</i></span>
+        <h3>工具</h3>
+        <p>顺手的小工具和常用链接。</p>
+        <span class="arrow">→</span>
+      </a>
+      <a class="entry-card reveal" href="project/">
+        <span class="num">PROJECT<i>プロジェクト</i></span>
+        <h3>項目</h3>
+        <p>作业与项目的过程。</p>
+        <span class="arrow">→</span>
+      </a>
+      <a class="entry-card reveal" href="myinterest/">
+        <span class="num">MY INTEREST<i>興味</i></span>
+        <h3>興趣</h3>
+        <p>做过想过的东西。</p>
+        <span class="arrow">→</span>
+      </a>
+      <a class="entry-card reveal" href="work/">
+        <span class="num">WORK<i>じむ</i></span>
+        <h3>事務</h3>
+        <p>呢喃以及未来的事。</p>
+        <span class="arrow">→</span>
+      </a>
+      <a class="entry-card reveal" href="about.html">
+        <span class="num">ABOUT<i>について</i></span>
+        <h3>關於</h3>
+        <p>这个站、这个人、是个啥子。</p>
+        <span class="arrow">→</span>
+      </a>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="section-head reveal">
+      <span class="section-num">02</span>
+      <h2>最近</h2>
+      <span class="section-rule"></span>
+    </div>
+    <div class="recent">
+      <div class="reveal">
+        <a class="row" href="/tools/rich-editor.html" target="_blank" rel="noopener">
+        <time>2026.10.27</time>
+        <span class="row-title">HTML 编辑器</span>
+        <span class="row-tag">工具</span>
+      </a>
+<a class="row" href="project/zhongguo-zhizhi-topic-plan/">
+        <time>2026.10.27</time>
+        <span class="row-title">选题计划</span>
+        <span class="row-tag">項目</span>
+      </a>
+<a class="row" href="myinterest/laoxiu/">
+        <time>2026.10.27</time>
+        <span class="row-title">冠年老朽歌（仅主旋律）</span>
+        <span class="row-tag">興趣</span>
+      </a>
+      </div>
+    </div>
+  </section>
+</div>
+
+  </main>
+  <script src="assets/app.js" defer></script>
+</body>
+</html>

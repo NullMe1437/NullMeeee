@@ -1,0 +1,72 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>关于 · ⭐NullMe⭐</title>
+  <meta name="description" content="说点啥。。">
+  <meta property="og:title" content="关于 · ⭐NullMe⭐">
+  <meta property="og:description" content="说点啥。。">
+  <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="assets/style.css">
+  <script>
+    (function () {
+      try {
+        var t = localStorage.getItem('theme');
+        if (!t) t = matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+        document.documentElement.setAttribute('data-theme', t);
+      } catch (e) {}
+      document.documentElement.classList.add('js');
+    })();
+  </script>
+</head>
+<body>
+  <a class="sr-only" href="#main">跳到正文</a>
+  <header class="nav">
+    <div class="wrap nav-inner">
+      <a class="brand" href="index.html">⭐NullMe⭐<span class="brand-dot"></span></a>
+      <nav class="nav-links">
+        <a href="tools/"><span class="nav-en">TOOLS</span><span class="nav-jp">ツール</span></a>
+        <a href="project/"><span class="nav-en">PROJECT</span><span class="nav-jp">プロジェクト</span></a>
+        <a href="myinterest/"><span class="nav-en">MY INTEREST</span><span class="nav-jp">興味</span></a>
+        <a href="work/"><span class="nav-en">WORK</span><span class="nav-jp">じむ</span></a>
+        <a href="about.html" class="is-active" aria-current="page"><span class="nav-en">ABOUT</span><span class="nav-jp">について</span></a>
+        <button class="theme-toggle" type="button" data-theme-toggle aria-label="切换深浅色">
+          <span class="icon-sun" aria-hidden="true">☀</span><span class="icon-moon" aria-hidden="true">☾</span>
+        </button>
+      </nav>
+    </div>
+  </header>
+  <main id="main">
+
+<div class="wrap">
+  <div class="post-layout">
+    <article class="post">
+      <header class="post-head">
+        <p class="post-kicker">ABOUT · について</p>
+        <h1>关于</h1>
+        <p class="post-lead">说点啥。。</p>
+      </header>
+      <div class="prose"><ul><li>音乐爱好者，目前正在学reaper（用ai）制曲，常听国风，日本流行。</li></ul>
+<ul><li>文学诗歌爱好者，知识很烂，又菜又爱写。最偏爱的诗人是李贺。</li></ul>
+<ul><li>自闭迷茫型人类，喜欢睡觉。</li></ul>
+<ul><li>dsh依赖者，有事没事和肥鱼玩耍。</li></ul>
+<ul><li>NJU政院在读本科生。</li></ul>
+<ul><li>湖南人，辣椒中度依赖。</li></ul>
+<h2 id="这个站是干什么的">这个站是干什么的</h2>
+<p>心血来潮，遂有此站。用以干任何它能干的事情。欢迎交流。</p>
+<h2 id="联系">联系</h2>
+<p>邮箱为wuwo1437@163.com。企鹅为3855477204。</p></div>
+    </article>
+    <aside class="about-side">
+      <h3>联系</h3><p><a href="mailto:wuwo1437@163.com">wuwo1437@163.com</a></p>
+      
+      <h3 style="margin-top:28px">本站</h3>
+      <p>纯静态页面，没有后台，没有跟踪脚本。<br>内容用 Markdown 写。</p>
+    </aside>
+  </div>
+</div>
+  </main>
+  <script src="assets/app.js" defer></script>
+</body>
+</html>

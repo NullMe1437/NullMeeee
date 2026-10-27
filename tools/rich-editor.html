@@ -1,0 +1,744 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>HTML 浮動編輯器</title>
+<style>
+  :root {
+    --bg: #f6f6f4;
+    --panel: #ffffff;
+    --ink: #1b1b1f;
+    --muted: #6b6b76;
+    --line: #e3e3e0;
+    --accent: #2563eb;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #16161a;
+      --panel: #1d1d22;
+      --ink: #ececf1;
+      --muted: #9a9aa6;
+      --line: #2c2c33;
+    }
+  }
+  * { box-sizing: border-box; }
+  html, body { height: 100%; margin: 0; }
+  body {
+    display: flex;
+    flex-direction: column;
+    background: var(--bg);
+    color: var(--ink);
+    font: 13px/1.45 ui-sans-serif, system-ui, "Segoe UI", "Microsoft JhengHei", sans-serif;
+  }
+  header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 7px 10px;
+    background: var(--panel);
+    border-bottom: 1px solid var(--line);
+    -webkit-user-select: none;
+    user-select: none;
+  }
+  header .name {
+    flex: 1;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    color: var(--muted);
+  }
+  header .name.dirty::after { content: " •"; color: var(--accent); }
+  button.chrome {
+    all: unset;
+    cursor: pointer;
+    padding: 5px 10px;
+    border-radius: 7px;
+    border: 1px solid var(--line);
+    color: var(--ink);
+    white-space: nowrap;
+  }
+  button.chrome:hover { background: color-mix(in srgb, var(--ink) 7%, transparent); }
+  main { position: relative; flex: 1; min-height: 0; }
+  iframe {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    border: 0;
+    background: #fff;
+  }
+  textarea#source {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    border: 0;
+    padding: 16px 18px;
+    resize: none;
+    display: none;
+    font: 13px/1.6 ui-monospace, "Cascadia Code", Consolas, monospace;
+    background: var(--panel);
+    color: var(--ink);
+    tab-size: 2;
+  }
+  textarea#source.on { display: block; }
+  #drop {
+    position: absolute;
+    inset: 0;
+    display: none;
+    place-items: center;
+    background: #2563eb22;
+    border: 2px dashed var(--accent);
+    color: var(--accent);
+    font-size: 15px;
+    pointer-events: none;
+  }
+  #drop.on { display: grid; }
+</style>
+</head>
+<body>
+<header>
+  <button class="chrome" id="open">開啟 HTML</button>
+  <button class="chrome" id="save" title="Ctrl+S">儲存</button>
+  <button class="chrome" id="saveas">另存新檔</button>
+  <span class="name" id="name">尚未開啟檔案 — 可直接把 .html 拖進來</span>
+  <button class="chrome" id="toggle" title="切換所見即所得 / 原始碼">原始碼</button>
+</header>
+
+<main>
+  <iframe id="view" sandbox="allow-same-origin allow-scripts allow-forms" title="渲染檢視"></iframe>
+  <textarea id="source" spellcheck="false"></textarea>
+  <div id="drop">放開以開啟這個 HTML</div>
+</main>
+
+<script>
+"use strict";
+
+/**
+ * 單檔 HTML 閱讀/編輯器（第二版：加上表格、字級、顏色、圖片、復原/重做）。
+ *
+ * 原理和第一版一樣：整份 HTML 文件寫進 iframe，body 變成 contenteditable，
+ * 使用者在渲染結果上直接改字；儲存時只把 body 的 innerHTML 拼回原骨架，
+ * head / body 屬性一律不動。工具列掛在 <html> 底下，所以永遠不會被存進檔案。
+ */
+const view = document.getElementById("view");
+const source = document.getElementById("source");
+const nameEl = document.getElementById("name");
+const dropEl = document.getElementById("drop");
+
+const MOD = /Mac|iPhone|iPad|iPod/.test(navigator.userAgent) ? "⌘" : "Ctrl+";
+
+const state = {
+  docName: "",
+  sourceText: "",
+  fileHandle: null,
+  dirty: false,
+  rawMode: false,
+  ready: false,
+};
+
+/* ------------------------------------------------------------------ 檔案 */
+
+function setDirty(on) {
+  state.dirty = on;
+  nameEl.classList.toggle("dirty", on);
+}
+
+function setDocName(name) {
+  state.docName = name || "";
+  nameEl.textContent = name || "尚未開啟檔案 — 可直接把 .html 拖進來";
+  document.title = name ? name + " — HTML 浮動編輯器" : "HTML 浮動編輯器";
+}
+
+async function loadFile(file) {
+  const text = await file.text();
+  openSource(text, file.name);
+  state.fileHandle = null;
+}
+
+function openSource(text, name) {
+  state.sourceText = text;
+  setDocName(name);
+  setDirty(false);
+  state.rawMode = false;
+  source.classList.remove("on");
+  source.value = text;
+  document.getElementById("toggle").textContent = "原始碼";
+  writeView(text);
+}
+
+function writeView(text) {
+  const full = /<html[\s>]/i.test(text)
+    ? text
+    : `<!doctype html><html><head><meta charset="utf-8"><meta name="color-scheme" content="light dark"></head><body>${text}</body></html>`;
+  state.ready = false;
+  view.srcdoc = full;
+}
+
+view.addEventListener("load", () => {
+  const idoc = view.contentDocument;
+  if (!idoc || !idoc.body) return;
+  idoc.body.contentEditable = "true";
+  idoc.body.spellcheck = true;
+  state.ready = true;
+  attachToolbar(idoc);
+  idoc.addEventListener("input", () => {
+    setDirty(true);
+    refreshActive();
+  });
+  // 貼上圖片：直接轉成 data URL 插進文件（不依賴任何伺服器）。
+  idoc.addEventListener("paste", (e) => {
+    const items = e.clipboardData && e.clipboardData.items;
+    if (!items) return;
+    for (const it of items) {
+      if (it.type && it.type.startsWith("image/")) {
+        e.preventDefault();
+        insertImageFile(idoc, it.getAsFile());
+        return;
+      }
+    }
+  });
+  // 拖圖片進來也一樣處理。
+  idoc.addEventListener("drop", (e) => {
+    const f = e.dataTransfer && e.dataTransfer.files && e.dataTransfer.files[0];
+    if (f && f.type.startsWith("image/")) {
+      e.preventDefault();
+      insertImageFile(idoc, f);
+    }
+  });
+  idoc.addEventListener("dragover", (e) => {
+    const items = e.dataTransfer && e.dataTransfer.items;
+    if (items && [...items].some((i) => i.type.startsWith("image/"))) e.preventDefault();
+  });
+  refreshActive();
+});
+
+/* --------------------------------------------------------------- 寫回檔案 */
+
+function currentDocumentText() {
+  const idoc = view.contentDocument;
+  if (!idoc) return state.sourceText;
+  const bodyInner = idoc.body.innerHTML;
+  const text = state.sourceText;
+  if (!/<html[\s>]/i.test(text)) return bodyInner;
+  const open = text.search(/<body(\s[^>]*)?>/i);
+  if (open < 0) return bodyInner;
+  const openEnd = text.indexOf(">", open) + 1;
+  const close = text.toLowerCase().lastIndexOf("</body");
+  if (close < openEnd) return bodyInner;
+  return text.slice(0, openEnd) + bodyInner + text.slice(close);
+}
+
+async function save(asNew) {
+  if (!state.ready && !state.rawMode) return;
+  const text = state.rawMode ? source.value : currentDocumentText();
+  const suggested = state.docName || "untitled.html";
+
+  if (!asNew && state.fileHandle) {
+    const w = await state.fileHandle.createWritable();
+    await w.write(text);
+    await w.close();
+    state.sourceText = text;
+    setDirty(false);
+    return;
+  }
+  if (window.showSaveFilePicker) {
+    try {
+      const handle = await window.showSaveFilePicker({
+        suggestedName: suggested,
+        types: [{ description: "HTML", accept: { "text/html": [".html", ".htm"] } }],
+      });
+      const w = await handle.createWritable();
+      await w.write(text);
+      await w.close();
+      state.fileHandle = handle;
+      state.sourceText = text;
+      setDocName(handle.name);
+      setDirty(false);
+      return;
+    } catch (err) {
+      if (err && err.name === "AbortError") return;
+    }
+  }
+  const blob = new Blob([text], { type: "text/html;charset=utf-8" });
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(blob);
+  a.download = suggested;
+  a.click();
+  setTimeout(() => URL.revokeObjectURL(a.href), 4000);
+  state.sourceText = text;
+  setDirty(false);
+}
+
+document.getElementById("open").onclick = async () => {
+  if (window.showOpenFilePicker) {
+    try {
+      const [handle] = await window.showOpenFilePicker({
+        types: [{ description: "HTML", accept: { "text/html": [".html", ".htm"] } }],
+      });
+      const file = await handle.getFile();
+      const text = await file.text();
+      openSource(text, file.name);
+      state.fileHandle = handle;
+      return;
+    } catch (err) {
+      if (err && err.name === "AbortError") return;
+    }
+  }
+  const input = document.createElement("input");
+  input.type = "file";
+  input.accept = ".html,.htm,text/html";
+  input.onchange = () => input.files && input.files[0] && loadFile(input.files[0]);
+  input.click();
+};
+
+document.getElementById("save").onclick = () => save(false);
+document.getElementById("saveas").onclick = () => save(true);
+
+document.getElementById("toggle").onclick = () => {
+  state.rawMode = !state.rawMode;
+  if (state.rawMode) {
+    source.value = state.ready ? currentDocumentText() : state.sourceText;
+    source.classList.add("on");
+  } else {
+    state.sourceText = source.value;
+    source.classList.remove("on");
+    writeView(state.sourceText);
+    setDirty(false);
+  }
+  document.getElementById("toggle").textContent = state.rawMode ? "渲染檢視" : "原始碼";
+};
+
+window.addEventListener("keydown", (e) => {
+  const mod = e.ctrlKey || e.metaKey;
+  if (!mod) return;
+  const k = e.key.toLowerCase();
+  if (k === "s") { e.preventDefault(); save(e.shiftKey); }
+  else if (state.rawMode || !state.ready) return;
+  else if (k === "z" && !e.shiftKey) { e.preventDefault(); view.contentDocument.execCommand("undo"); setDirty(true); }
+  else if ((k === "z" && e.shiftKey) || k === "y") { e.preventDefault(); view.contentDocument.execCommand("redo"); setDirty(true); }
+  else if (k === "b" || k === "i" || k === "u") {
+    e.preventDefault();
+    view.contentDocument.execCommand(k === "b" ? "bold" : k === "i" ? "italic" : "underline");
+    setDirty(true);
+    refreshActive();
+  }
+});
+
+window.addEventListener("dragover", (e) => { e.preventDefault(); dropEl.classList.add("on"); });
+window.addEventListener("dragleave", (e) => {
+  if (e.relatedTarget) return;
+  dropEl.classList.remove("on");
+});
+window.addEventListener("drop", (e) => {
+  e.preventDefault();
+  dropEl.classList.remove("on");
+  const f = e.dataTransfer && e.dataTransfer.files && e.dataTransfer.files[0];
+  if (!f) return;
+  if (f.type.startsWith("image/") && state.ready) insertImageFile(view.contentDocument, f);
+  else loadFile(f);
+});
+
+/* ---------------------------------------------------------------- 工具列 */
+const BAR_CLASS = "we-fmt";
+
+const STYLE = `
+.${BAR_CLASS} {
+  position: fixed;
+  left: 50%;
+  bottom: 16px;
+  transform: translateX(-50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+  max-width: calc(100% - 20px);
+  padding: 7px 9px;
+  border-radius: 16px;
+  background: #0e1726ee;
+  box-shadow: 0 8px 24px #00000059, 0 0 0 1px #ffffff1f inset;
+  z-index: 2147483647;
+  font: 600 13px/1 ui-sans-serif, system-ui, "Segoe UI", "Microsoft JhengHei", sans-serif;
+  opacity: .6;
+  transition: opacity .15s ease;
+}
+.${BAR_CLASS}:hover, .${BAR_CLASS}:focus-within { opacity: 1; }
+.${BAR_CLASS} .row { display: flex; align-items: center; gap: 2px; flex-wrap: wrap; justify-content: center; }
+.${BAR_CLASS} button {
+  all: unset;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 27px;
+  height: 27px;
+  padding: 0 6px;
+  border-radius: 999px;
+  color: #e8ecf6;
+  background: transparent;
+  font-size: 13px;
+  line-height: 1;
+  -webkit-user-select: none;
+  user-select: none;
+  white-space: nowrap;
+}
+.${BAR_CLASS} button:hover { background: #ffffff1f; }
+.${BAR_CLASS} button.is-active { background: #2563eb; color: #fff; }
+.${BAR_CLASS} button.txt { font-size: 11px; font-weight: 600; }
+.${BAR_CLASS} .sep { width: 1px; height: 15px; margin: 0 3px; background: #ffffff33; }
+.${BAR_CLASS} .lbl { font-size: 10px; font-weight: 600; color: #9fb0cc; margin: 0 2px 0 4px; letter-spacing: .04em; }
+.${BAR_CLASS} .sw { width: 18px; height: 18px; min-width: 18px; height: 18px; border-radius: 6px; padding: 0; border: 1px solid #ffffff40; }
+.${BAR_CLASS} .pop {
+  position: absolute;
+  bottom: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  margin-bottom: 6px;
+  padding: 8px;
+  border-radius: 12px;
+  background: #0e1726f7;
+  box-shadow: 0 10px 28px #00000073, 0 0 0 1px #ffffff1f inset;
+  display: none;
+  gap: 4px;
+}
+.${BAR_CLASS} .pop.on { display: flex; }
+.${BAR_CLASS} .pop.grid { display: none; grid-template-columns: repeat(6, 18px); gap: 3px; }
+.${BAR_CLASS} .pop.grid.on { display: grid; }
+.${BAR_CLASS} .pop .cell {
+  width: 18px; height: 18px; min-width: 18px; border-radius: 4px;
+  background: #ffffff22; border: 1px solid #ffffff1a; cursor: pointer; padding: 0;
+}
+.${BAR_CLASS} .pop .cell.hot { background: #2563eb; }
+`;
+
+const COLORS = [
+  "#000000", "#37373c", "#6b6b76", "#9b9ba6", "#e8e8ec", "#ffffff",
+  "#b91c1c", "#dc2626", "#ea580c", "#d97706", "#ca8a04", "#65a30d",
+  "#15803d", "#0d9488", "#0891b2", "#2563eb", "#4f46e5", "#7c3aed",
+  "#a21caf", "#db2777", "#e11d48", "#ff6b6b", "#feca57", "#1dd1a1",
+];
+
+let bar = null;
+let refreshActive = () => {};
+
+/* ---- 選取範圍處理：套字級/顏色時把選取包進 <span style="…"> ---- */
+function saveSelection(idoc) {
+  const sel = idoc.getSelection();
+  if (!sel || sel.rangeCount === 0) return null;
+  return sel.getRangeAt(0).cloneRange();
+}
+
+function restoreSelection(idoc, range) {
+  if (!range) return;
+  const sel = idoc.getSelection();
+  sel.removeAllRanges();
+  sel.addRange(range);
+}
+
+function wrapSelectionStyle(idoc, styleText) {
+  const sel = idoc.getSelection();
+  if (!sel || sel.rangeCount === 0) return false;
+  const range = sel.getRangeAt(0);
+  if (range.collapsed) return false;
+  const span = idoc.createElement("span");
+  span.setAttribute("style", styleText);
+  span.appendChild(range.extractContents());
+  range.insertNode(span);
+  const r = idoc.createRange();
+  r.selectNodeContents(span);
+  sel.removeAllRanges();
+  sel.addRange(r);
+  return true;
+}
+
+function blockAtCaret(idoc) {
+  const sel = idoc.getSelection();
+  if (!sel || !sel.anchorNode) return null;
+  let node = sel.anchorNode;
+  if (node.nodeType !== 1) node = node.parentElement;
+  if (!node || node.nodeType !== 1) return null;
+  return node.closest("h1,h2,h3,h4,h5,h6,p,blockquote,li,pre,td,th");
+}
+
+function tagMatch(tag) {
+  return (block) => !!block && block.tagName.toLowerCase() === tag;
+}
+
+/* ---- 插入圖片 ---- */
+function insertImageFile(idoc, file) {
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = () => {
+    idoc.execCommand(
+      "insertHTML",
+      false,
+      `<img src="${reader.result}" alt="" style="max-width:100%;height:auto;" />`,
+    );
+    setDirty(true);
+  };
+  reader.readAsDataURL(file);
+}
+
+/* ---- 工具列動作 ---- */
+const ACTIONS = [
+  { label: "↶", title: "復原 · " + MOD + "Z", run: (d) => d.execCommand("undo") },
+  { label: "↷", title: "重做 · " + MOD + "Shift+Z", run: (d) => d.execCommand("redo") },
+  { sep: true },
+  { label: "B", title: "粗體 · " + MOD + "B", bold: true, run: (d) => d.execCommand("bold") },
+  { label: "I", title: "斜體 · " + MOD + "I", italic: true, run: (d) => d.execCommand("italic") },
+  { label: "U", title: "下劃線 · " + MOD + "U", underline: true, run: (d) => d.execCommand("underline") },
+  { label: "S", title: "刪除線", strike: true, run: (d) => d.execCommand("strikeThrough") },
+  { sep: true },
+  { label: "H1", title: "一級標題", match: tagMatch("h1"), run: (d) => d.execCommand("formatBlock", false, "h1") },
+  { label: "H2", title: "二級標題", match: tagMatch("h2"), run: (d) => d.execCommand("formatBlock", false, "h2") },
+  { label: "H3", title: "三級標題", match: tagMatch("h3"), run: (d) => d.execCommand("formatBlock", false, "h3") },
+  { label: "¶", title: "正文段落", match: tagMatch("p"), run: (d) => d.execCommand("formatBlock", false, "p") },
+  { sep: true },
+  { label: "❝", title: "引用區塊", match: tagMatch("blockquote"), run: (d) => d.execCommand("formatBlock", false, "blockquote") },
+  { label: "•", title: "無序清單", match: (b) => !!b && b.tagName.toLowerCase() === "li" && !!b.closest("ul"), run: (d) => d.execCommand("insertUnorderedList") },
+  { label: "1.", title: "有序清單", match: (b) => !!b && b.tagName.toLowerCase() === "li" && !!b.closest("ol"), run: (d) => d.execCommand("insertOrderedList") },
+  { sep: true },
+  { label: "⌫", title: "清除格式", run: (d) => { d.execCommand("removeFormat"); } },
+];
+
+const SIZES = [
+  { label: "小", px: "13px", title: "小字 13px" },
+  { label: "正常", px: "16px", title: "內文 16px" },
+  { label: "大", px: "20px", title: "大字 20px" },
+  { label: "特大", px: "26px", title: "特大 26px" },
+];
+
+function attachToolbar(idoc) {
+  if (bar && bar.ownerDocument === idoc) return;
+
+  const style = idoc.createElement("style");
+  style.textContent = STYLE;
+  idoc.head.appendChild(style);
+
+  bar = idoc.createElement("div");
+  bar.className = BAR_CLASS;
+  bar.setAttribute("role", "toolbar");
+  bar.setAttribute("contenteditable", "false");
+  bar.setAttribute("aria-label", "文字格式");
+
+  const row1 = idoc.createElement("div");
+  row1.className = "row";
+  const row2 = idoc.createElement("div");
+  row2.className = "row";
+  bar.append(row1, row2);
+
+  const mkBtn = (label, title) => {
+    const b = idoc.createElement("button");
+    b.type = "button";
+    b.textContent = label;
+    b.title = title || label;
+    b.dataset.velqChrome = "";
+    // 關鍵：按下時不要搶走 iframe 內的選取，游標才會留在原處。
+    b.addEventListener("mousedown", (e) => e.preventDefault());
+    return b;
+  };
+
+  for (const a of ACTIONS) {
+    if (a.sep) {
+      const sep = idoc.createElement("span");
+      sep.className = "sep";
+      row1.appendChild(sep);
+      continue;
+    }
+    const btn = mkBtn(a.label, a.title);
+    btn.addEventListener("click", () => {
+      if (!state.ready) return;
+      a.run(idoc);
+      setDirty(true);
+      refreshActive();
+    });
+    a.el = btn;
+    row1.appendChild(btn);
+  }
+
+  /* ---- 第二列：字級 / 顏色 / 底色 / 表格 / 圖片 ---- */
+  const lbl = idoc.createElement("span");
+  lbl.className = "lbl";
+  lbl.textContent = "字級";
+  row2.appendChild(lbl);
+
+  for (const s of SIZES) {
+    const btn = mkBtn(s.label, s.title + "（先選取文字）");
+    btn.classList.add("txt");
+    btn.addEventListener("click", () => {
+      if (!state.ready) return;
+      if (!wrapSelectionStyle(idoc, `font-size:${s.px}`)) flash(idoc, "請先選取文字再套用字級");
+      setDirty(true);
+    });
+    row2.appendChild(btn);
+  }
+
+  const sep2 = idoc.createElement("span");
+  sep2.className = "sep";
+  row2.appendChild(sep2);
+
+  /* 顏色：文字色 / 底色，各一個彈出調色盤 */
+  const mkPalette = (icon, title, apply) => {
+    const wrap = idoc.createElement("button");
+    wrap.type = "button";
+    wrap.textContent = icon;
+    wrap.title = title;
+    wrap.dataset.velqChrome = "";
+    wrap.addEventListener("mousedown", (e) => e.preventDefault());
+
+    const pop = idoc.createElement("div");
+    pop.className = "pop";
+    for (const c of COLORS) {
+      const sw = idoc.createElement("button");
+      sw.type = "button";
+      sw.className = "sw";
+      sw.style.background = c;
+      sw.title = c;
+      sw.dataset.velqChrome = "";
+      sw.addEventListener("mousedown", (e) => e.preventDefault());
+      sw.addEventListener("click", () => {
+        apply(idoc, c);
+        pop.classList.remove("on");
+        setDirty(true);
+      });
+      pop.appendChild(sw);
+    }
+    wrap.addEventListener("click", () => {
+      const open = pop.classList.contains("on");
+      closePopups();
+      pop.classList.toggle("on", !open);
+    });
+    bar.appendChild(pop);
+    return { wrap, pop };
+  };
+
+  const textPal = mkPalette("A", "文字顏色（先選取文字）", (d, c) => {
+    if (!wrapSelectionStyle(d, `color:${c}`)) d.execCommand("foreColor", false, c);
+  });
+  const bgPal = mkPalette("▨", "文字底色（先選取文字）", (d, c) => {
+    if (!wrapSelectionStyle(d, `background-color:${c}`)) d.execCommand("hiliteColor", false, c);
+  });
+  row2.appendChild(textPal.wrap);
+  row2.appendChild(bgPal.wrap);
+
+  const sep3 = idoc.createElement("span");
+  sep3.className = "sep";
+  row2.appendChild(sep3);
+
+  /* 表格：點開 6×6 格子挑大小 */
+  const tblBtn = mkBtn("表格", "插入表格");
+  const tblPop = idoc.createElement("div");
+  tblPop.className = "pop grid";
+  const GRID = 6;
+  const cells = [];
+  const hot = (rows, cols) => {
+    for (const c of cells) {
+      c.el.classList.toggle("hot", c.r < rows && c.c < cols);
+    }
+  };
+  for (let r = 0; r < GRID; r++) {
+    for (let c = 0; c < GRID; c++) {
+      const cell = idoc.createElement("button");
+      cell.type = "button";
+      cell.className = "cell";
+      cell.dataset.velqChrome = "";
+      cell.addEventListener("mousedown", (e) => e.preventDefault());
+      cell.addEventListener("mouseenter", () => hot(r + 1, c + 1));
+      cell.addEventListener("click", () => {
+        insertTable(idoc, r + 1, c + 1);
+        tblPop.classList.remove("on");
+        setDirty(true);
+      });
+      cells.push({ el: cell, r, c });
+      tblPop.appendChild(cell);
+    }
+  }
+  tblBtn.addEventListener("click", () => {
+    const open = tblPop.classList.contains("on");
+    closePopups();
+    tblPop.classList.toggle("on", !open);
+    hot(0, 0);
+  });
+  row2.appendChild(tblBtn);
+  bar.appendChild(tblPop);
+
+  /* 圖片：從磁碟選一張，以 data URL 內嵌（檔案自身就帶著圖，不會掉圖） */
+  const imgBtn = mkBtn("圖片", "插入圖片（也可以直接貼上或拖進來）");
+  imgBtn.addEventListener("click", () => {
+    if (!state.ready) return;
+    const input = document.createElement("input");
+    input.type = "file";
+    input.accept = "image/*";
+    input.onchange = () => input.files && input.files[0] && insertImageFile(idoc, input.files[0]);
+    input.click();
+  });
+  row2.appendChild(imgBtn);
+
+  // 工具列掛在 <html> 底下而不是 body，body.innerHTML 才不會把工具列存進檔案。
+  idoc.documentElement.appendChild(bar);
+
+  function closePopups() {
+    for (const p of bar.querySelectorAll(".pop")) p.classList.remove("on");
+  }
+  idoc.addEventListener("click", (e) => {
+    if (bar.contains(e.target)) return;
+    closePopups();
+  });
+
+  refreshActive = () => {
+    for (const a of ACTIONS) {
+      if (a.sep || !a.el) continue;
+      let on = false;
+      try {
+        if (a.bold) on = idoc.queryCommandState("bold");
+        else if (a.italic) on = idoc.queryCommandState("italic");
+        else if (a.underline) on = idoc.queryCommandState("underline");
+        else if (a.strike) on = idoc.queryCommandState("strikeThrough");
+        else if (a.match) on = a.match(blockAtCaret(idoc));
+      } catch { on = false; }
+      a.el.classList.toggle("is-active", !!on);
+    }
+  };
+  idoc.addEventListener("selectionchange", refreshActive);
+}
+
+/* 比較輕的提示：在游標附近閃一行小字 */
+function flash(idoc, msg) {
+  const old = idoc.getElementById("we-flash");
+  if (old) old.remove();
+  const el = idoc.createElement("div");
+  el.id = "we-flash";
+  el.textContent = msg;
+  el.setAttribute("contenteditable", "false");
+  el.style.cssText =
+    "position:fixed;left:50%;bottom:96px;transform:translateX(-50%);background:#0e1726f2;color:#fff;" +
+    "padding:7px 12px;border-radius:9px;font:600 12px/1 ui-sans-serif,system-ui;z-index:2147483647;" +
+    "pointer-events:none;box-shadow:0 6px 18px #0006";
+  idoc.documentElement.appendChild(el);
+  setTimeout(() => el.remove(), 1600);
+}
+
+function insertTable(idoc, rows, cols) {
+  let html = `<table style="border-collapse:collapse;width:100%;margin:8px 0;">`;
+  for (let r = 0; r < rows; r++) {
+    html += "<tr>";
+    for (let c = 0; c < cols; c++) {
+      const tag = r === 0 ? "th" : "td";
+      const style =
+        "border:1px solid #c8c8cf;padding:6px 9px;text-align:left;vertical-align:top;";
+      html += `<${tag} style="${style}"><br></${tag}>`;
+    }
+    html += "</tr>";
+  }
+  html += "</table><p><br></p>";
+  idoc.execCommand("insertHTML", false, html);
+}
+
+/* 起手：先放一個空文件，讓工具列立刻可用 */
+openSource('<!doctype html>\n<html><head><meta charset="utf-8"></head><body><p>在這裡輸入內容…</p></body></html>', "");
+setDirty(false);
+</script>
+</body>
+</html>
