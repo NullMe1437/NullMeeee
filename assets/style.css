@@ -297,6 +297,38 @@ main {
   padding-left: 1.4em;
 }
 
+/* 詩題可點：平時一條很淡的下劃線，滑過「開愁歌」時變赭紅並浮出「鑑賞」 */
+.poem-title {
+  color: inherit;
+  cursor: pointer;
+  text-decoration: underline;
+  text-decoration-color: rgba(246, 242, 234, 0.26);
+  text-decoration-thickness: 1px;
+  text-underline-offset: 4px;
+  transition: color 0.25s ease, text-decoration-color 0.25s ease;
+}
+
+.poem-title:hover,
+.poem-title:focus-visible {
+  color: #e9b79c;
+  text-decoration-color: #e9b79c;
+}
+
+.poem-hint {
+  font-size: 9.5px;
+  letter-spacing: 0.24em;
+  color: rgba(233, 183, 156, 0.92);
+  opacity: 0;
+  /* 竖排时 padding-inline-start 落到上边，横排落到左边，两种版式都留出空隙 */
+  padding-inline-start: 0.8em;
+  transition: opacity 0.25s ease;
+}
+
+.poem-sign:hover .poem-hint,
+.poem-title:focus-visible ~ .poem-hint {
+  opacity: 1;
+}
+
 .eyebrow {
   font-size: 11px;
   letter-spacing: 0.26em;
