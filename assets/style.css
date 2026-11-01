@@ -900,7 +900,19 @@ main {
   line-height: 1.9;
   border-left: 1px solid var(--line);
   padding-left: 20px;
+  /* 目录比屏幕高时自己滚动，不必等正文滚到底 */
+  max-height: calc(100vh - 132px);
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  padding-right: 8px;
+  scrollbar-width: thin;
+  scrollbar-color: var(--line) transparent;
 }
+
+.toc::-webkit-scrollbar { width: 6px; }
+.toc::-webkit-scrollbar-track { background: transparent; }
+.toc::-webkit-scrollbar-thumb { background: var(--line); border-radius: 3px; }
+.toc::-webkit-scrollbar-thumb:hover { background: var(--ink-3); }
 
 .toc-title {
   font-size: 10.5px;
@@ -1026,43 +1038,6 @@ main {
   color: var(--ink-2);
   border-bottom: 1px solid var(--line-strong);
 }
-
-/* 上一篇 / 下一篇 */
-.post-nav {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 18px;
-  margin-top: 64px;
-  padding-top: 26px;
-  border-top: 1px solid var(--line);
-}
-
-.post-nav a {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  padding: 18px 20px;
-  border: 1px solid var(--line);
-  transition: border-color 0.25s ease, transform 0.25s ease;
-}
-
-.post-nav a:hover { border-color: var(--accent); transform: translateY(-2px); }
-.post-nav a.next { text-align: right; }
-.post-nav span { font-size: 10.5px; letter-spacing: 0.16em; color: var(--ink-3); }
-.post-nav strong { font-weight: 500; font-size: 14px; font-family: var(--serif); }
-
-.post-nav-cell {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  padding: 18px 20px;
-  border: 1px solid var(--line);
-  transition: border-color 0.25s ease, transform 0.25s ease;
-}
-
-a.post-nav-cell:hover { border-color: var(--accent); transform: translateY(-2px); }
-.post-nav-cell.is-empty { border-color: transparent; }
-.post-nav-cell b { font-weight: 500; font-size: 14px; font-family: var(--serif); color: var(--ink); }
 
 /* ============================================================
    关于页
@@ -1236,7 +1211,7 @@ a.post-nav-cell:hover { border-color: var(--accent); transform: translateY(-2px)
     margin-bottom: 10px;
   }
   .post-layout { grid-template-columns: 1fr; }
-  .toc { position: static; border-left: 0; border-top: 1px solid var(--line); padding: 18px 0 0; margin-bottom: 8px; order: -1; }
+  .toc { position: static; max-height: none; overflow: visible; border-left: 0; border-top: 1px solid var(--line); padding: 18px 0 0; margin-bottom: 8px; order: -1; }
   .about-side { border-left: 0; border-top: 1px solid var(--line); padding: 20px 0 0; }
   .item { grid-template-columns: 1fr; gap: 8px; }
   .item-side { text-align: left; }
@@ -1270,6 +1245,5 @@ a.post-nav-cell:hover { border-color: var(--accent); transform: translateY(-2px)
   .entry-grid { grid-template-columns: 1fr; }
   .hero { min-height: 78vh; }
   .hero-caption { display: none; }
-  .post-nav { grid-template-columns: 1fr; }
   .footer-grid { grid-template-columns: 1fr; }
 }

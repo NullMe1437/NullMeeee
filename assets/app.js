@@ -28,22 +28,57 @@
 
   /* 目录跟随 */
   var tocLinks = Array.prototype.slice.call(document.querySelectorAll('.toc a'));
-  if (tocLinks.length && 'IntersectionObserver' in window) {
-    var byHeading = new Map();
+
+  // 目录自己可滚动，高亮项跑出可视区时把它带回来（只动目录，不动正文）
+  function keepTocVisible(link) {
+    var toc = link.closest('.toc');
+    if (!toc || toc.scrollHeight <= toc.clientHeight + 1) return;
+    var top = link.offsetTop;
+    var bottom = top + link.offsetHeight;
+    if (top < toc.scrollTop + 12) toc.scrollTop = Math.max(0, top - 12);
+    else if (bottom > toc.scrollTop + toc.clientHeight - 12) {
+      toc.scrollTop = bottom - toc.clientHeight + 12;
+    }
+  }
+
+  if (tocLinks.length) {
+    // 取「已经滚过屏幕三分之一线」的最后一个标题作为当前章节
+    var pairs = [];
     tocLinks.forEach(function (a) {
       var id = decodeURIComponent(a.getAttribute('href').slice(1));
       var heading = document.getElementById(id);
-      if (heading) byHeading.set(heading, a);
+      if (heading) pairs.push({ heading: heading, link: a });
     });
-    var spy = new IntersectionObserver(function (entries) {
-      entries.forEach(function (entry) {
-        if (!entry.isIntersecting) return;
-        tocLinks.forEach(function (a) { a.classList.remove('is-active'); });
-        var link = byHeading.get(entry.target);
-        if (link) link.classList.add('is-active');
-      });
-    }, { rootMargin: '-15% 0px -70% 0px' });
-    byHeading.forEach(function (_, heading) { spy.observe(heading); });
+
+    var ticking = false;
+    function updateSpy() {
+      ticking = false;
+      var line = window.innerHeight * 0.32;
+      var current = null;
+      for (var i = 0; i < pairs.length; i++) {
+        if (pairs[i].heading.getBoundingClientRect().top <= line) current = pairs[i];
+        else break;
+      }
+      if (!current) return;
+      if (current.link.classList.contains('is-active')) return;
+      tocLinks.forEach(function (a) { a.classList.remove('is-active'); });
+      current.link.classList.add('is-active');
+      keepTocVisible(current.link);
+    }
+
+    var pending = false;
+    function onScroll() {
+      if (pending) return;
+      pending = true;
+      window.setTimeout(function () {
+        pending = false;
+        updateSpy();
+      }, 90);
+    }
+
+    window.addEventListener('scroll', onScroll, { passive: true });
+    window.addEventListener('resize', onScroll);
+    updateSpy();
   }
 
   /* ============================================================

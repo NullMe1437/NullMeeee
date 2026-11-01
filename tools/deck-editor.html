@@ -1,0 +1,759 @@
+<!DOCTYPE html>
+<html lang="zh-Hant"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>頁間 · HTML 簡報編輯器</title><style>
+:root{color-scheme:light;--ink:#183b3c;--teal:#176f68;--line:#dce5e3;--muted:#637b79;--paper:#f7f9f6;--surface:#fff;--soft:#fdfefd} :root[data-theme=dark]{color-scheme:dark;--ink:#d7e8e3;--teal:#52b9a8;--line:#35504e;--muted:#9bb4ae;--paper:#142326;--surface:#1d3436;--soft:#203b3d}*{box-sizing:border-box}body{margin:0;font:14px/1.5 "Segoe UI","Microsoft JhengHei",sans-serif;color:var(--ink);background:var(--paper);height:100vh;display:flex;flex-direction:column}button,select,input{font:inherit}button{border:1px solid var(--line);background:var(--surface);color:var(--ink);border-radius:7px;padding:7px 12px;cursor:pointer;white-space:nowrap}button:hover:not(:disabled){background:#e8f2ee;border-color:#a4c3bc}button:focus-visible,select:focus-visible,input:focus-visible{outline:3px solid #72b9ac;outline-offset:2px}button:disabled{opacity:.35;cursor:default}button.primary{background:var(--teal);color:white;border-color:var(--teal)}button.primary:hover:not(:disabled){background:#0c5a54}.top{display:flex;align-items:center;gap:18px;padding:14px 22px 12px;border-bottom:1px solid var(--line);background:white}.brand{display:flex;align-items:center;gap:10px;min-width:185px}.mark{background:#e2f0e8;border-radius:10px;width:38px;height:38px;display:grid;place-items:center;font-size:22px}.brand strong{font-size:20px;font-weight:650;letter-spacing:2px}.brand small{display:block;font-size:10px;letter-spacing:1.4px;color:var(--muted)}.fileinfo{flex:1;min-width:80px}#filename{display:block;max-width:330px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-weight:600}#dirty{font-size:11px;color:var(--muted)}.actions{display:flex;gap:7px;flex-wrap:wrap}.tools{display:flex;align-items:center;gap:5px;flex-wrap:wrap;background:#fdfefd;padding:9px 22px;border-bottom:1px solid var(--line);min-height:53px}.tools button{padding:5px 10px;min-width:34px}.tools .sep{height:24px;border-left:1px solid var(--line);margin:0 5px}.tools select{max-width:110px}.tools select,.tools input[type=number]{padding:5px;border:1px solid var(--line);border-radius:5px;background:white;color:var(--ink)}.tools input[type=number]{width:58px}.tools input[type=color]{width:26px;height:27px;cursor:pointer;padding:1px;border:1px solid var(--line);border-radius:4px}.tools label{display:flex;gap:4px;align-items:center;font-size:12px;color:var(--muted)}.tools.inactive{opacity:.4;pointer-events:none}.workspace{flex:1;min-height:150px;padding:18px 22px 14px;display:flex;flex-direction:column;gap:10px}.canvas{position:relative;flex:1;min-height:0;background:#172c30;border-radius:12px;overflow:hidden;box-shadow:0 5px 20px #112a3410}iframe{width:100%;height:100%;border:0;display:block;background:white}iframe[hidden]{display:none}.welcome{height:100%;min-height:200px;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:30px;background:radial-gradient(ellipse at 50% 40%,#27484a,#142b30);color:#f3f7ef}.welcome[hidden]{display:none}.welcome .eyebrow{font-size:11px;letter-spacing:3px;color:#a6c4b8;margin-bottom:20px}.welcome h1{font-size:clamp(26px,3vw,42px);font-weight:550;line-height:1.4;margin:0 0 16px}.welcome p{margin:0 0 28px;color:#b6cec7;line-height:1.9}.welcome .actions{justify-content:center}.welcome button{background:#e4eee5}.hints{display:flex;gap:20px;margin-top:38px;font-size:12px;color:#8fb0a7}.nav{display:flex;align-items:center;justify-content:space-between;gap:12px}.page-controls{display:flex;align-items:center;gap:8px}#page{min-width:65px;text-align:center;font-variant-numeric:tabular-nums;font-weight:600}#pageSelect{border:1px solid var(--line);border-radius:6px;padding:7px;background:white;color:var(--ink)}.nav-hint{font-size:12px;color:var(--muted);flex:1;text-align:center}.footer{background:white;border-top:1px solid var(--line);padding:9px 22px;display:flex;align-items:center;gap:12px;min-height:40px}.footer #status{flex:1;font-size:12px;color:var(--muted);overflow-wrap:anywhere}.footer #status.error{color:#a3472d}.offline{font-size:10px;white-space:nowrap;letter-spacing:1px;color:var(--teal)}dialog{max-width:620px;width:calc(100% - 40px);padding:26px;border:1px solid var(--line);border-radius:14px;box-shadow:0 30px 100px #102c3440;color:var(--ink)}dialog::backdrop{background:#102b3277}dialog h2{margin:0 0 18px;font-size:22px}dialog p,dialog li{color:#516a66;line-height:1.8}dialog .end{display:flex;justify-content:flex-end;gap:8px;margin-top:20px}#htmlChoices{display:flex;flex-direction:column;gap:8px;max-height:50vh;overflow:auto}#htmlChoices button{text-align:left;overflow-wrap:anywhere;white-space:normal}dialog input{padding:7px;border:1px solid var(--line);border-radius:5px;width:65px}.pill{font-size:11px;background:#edf3ec;border-radius:20px;padding:4px 9px;color:#527169}@media(max-width:1000px){.top{flex-wrap:wrap;gap:10px;padding:10px 14px}.brand{min-width:160px}.top>.actions{margin-left:auto}.tools{padding:8px 14px}.workspace{padding:10px}.nav-hint{display:none}.footer{padding:8px 12px}}@media(max-width:650px){.brand small,.pill{display:none}.brand{min-width:auto}.brand strong{font-size:17px}.top>.actions{width:100%;justify-content:space-between}.top button{padding:6px 9px}.hints{display:none}.welcome{padding:20px}.tools{gap:3px}.tools .sep{margin:0 2px}}
+:root[data-theme=dark] body,:root[data-theme=dark] .top,:root[data-theme=dark] .tools,:root[data-theme=dark] .footer{background:var(--surface);color:var(--ink)}:root[data-theme=dark] .welcome{background:radial-gradient(ellipse at 50% 40%,#31595b,#101d20)}:root[data-theme=dark] .pill{background:#294542;color:#b7d5cc}:root[data-theme=dark] .nav-hint{color:var(--muted)}:root[data-theme=dark] .tools select,:root[data-theme=dark] .tools input[type=number],:root[data-theme=dark] #pageSelect{background:var(--surface);color:var(--ink)}
+</style></head><body>
+<header class="top"><div class="brand"><div class="mark">▱</div><div><strong>頁間</strong><small>HTML SLIDE EDITOR</small></div></div><div class="fileinfo"><span id="filename">尚未開啟簡報</span><span id="dirty"></span></div><div class="actions"><button id="openFile">開啟 HTML</button><button id="openFolder">開啟資料夾</button><button id="saveAs" data-needs disabled>另存新檔</button><button id="saveOriginal" class="primary" data-needs disabled>存回原檔</button><button id="themeToggle" title="切換日間／夜間模式">☾ 夜間模式</button><button id="settings" title="儲存設定">設定</button><button id="help" title="使用說明">?</button></div></header>
+<div id="tools" class="tools" role="toolbar" aria-label="文字與內容格式">
+<button data-needs data-cmd="undo" title="撤銷 Ctrl+Z">↶</button><button data-needs data-cmd="redo" title="重做 Ctrl+Y">↷</button><span class="sep"></span>
+<select id="block" data-needs aria-label="段落格式"><option value="">段落格式</option><option value="P">一般段落</option><option value="H1">標題 1</option><option value="H2">標題 2</option><option value="H3">標題 3</option><option value="H4">標題 4</option><option value="H5">標題 5</option><option value="H6">標題 6</option><option value="BLOCKQUOTE">引用</option></select>
+<button data-needs data-cmd="bold" title="粗體 Ctrl+B"><b>B</b></button><button data-needs data-cmd="italic" title="斜體 Ctrl+I"><i>I</i></button><button data-needs data-cmd="underline" title="底線 Ctrl+U"><u>U</u></button><button data-needs data-cmd="strikeThrough" title="刪除線"><s>S</s></button><span class="sep"></span>
+<button data-needs data-cmd="insertUnorderedList" title="項目符號清單">• 清單</button><button data-needs data-cmd="insertOrderedList" title="編號清單">1. 清單</button><button data-needs data-cmd="clearFormat" title="清除文字格式，恢復一般文字">清除格式</button><span class="sep"></span>
+<label>字級 <input id="fontSize" data-needs type="number" value="28" min="8" max="240" aria-label="字級 px"> px</label><label>字色 <input id="foreColor" data-needs type="color" value="#176f68" aria-label="文字顏色"></label><label>螢光 <input id="backColor" data-needs type="color" value="#fff29b" aria-label="螢光底色"></label><span class="sep"></span>
+<button id="insertTable" data-needs>＋ 表格</button><button id="insertImage" data-needs>＋ 圖片</button></div>
+<main class="workspace"><div class="canvas"><div id="welcome" class="welcome"><div class="eyebrow">YOUR SLIDES, YOUR WORDS.</div><h1>把簡報打開，<br>在畫面上直接改。</h1><div class="actions"><button onclick="document.getElementById('openFile').click()">開啟單一 HTML ↗</button><button onclick="document.getElementById('openFolder').click()">開啟含圖片的資料夾 ↗</button></div><div class="hints"><span>01　打開簡報</span><span>02　點選文字</span><span>03　備份並儲存</span></div></div><iframe id="preview" title="簡報編輯畫面" sandbox="allow-scripts allow-modals" hidden></iframe></div>
+<div class="nav"><div class="page-controls"><button id="prev" data-needs title="上一頁">←</button><span id="page">— / —</span><button id="next" data-needs title="下一頁">→</button><select id="pageSelect" data-needs aria-label="跳到指定頁"></select></div><span class="nav-hint">使用下方箭頭或頁次選單翻頁；文字內方向鍵移動游標</span><button id="mode" data-needs>▶ 放映檢查</button></div></main>
+<footer class="footer"><span class="offline">● OFFLINE</span><span id="status" role="status">請開啟單一 HTML，或選擇含有簡報、圖片與樣式的資料夾。</span><span class="pill">本機編輯 · 原始碼局部更新</span></footer>
+<input id="fileInput" type="file" accept=".html,.htm" hidden><input id="folderInput" type="file" webkitdirectory multiple hidden><input id="imageInput" type="file" accept="image/png,image/jpeg,image/webp,image/gif" hidden>
+<dialog id="chooseDialog"><h2>選擇要編輯的簡報</h2><p>已讀取整個資料夾，請選擇其中一個 HTML。</p><div id="htmlChoices"></div><div class="end"><button data-close>取消</button></div></dialog>
+<dialog id="settingsDialog"><h2>儲存與顯示設定</h2><label><input id="backupEnabled" type="checkbox"> 存回原檔前建立備份</label><p>預設不備份；開啟後會在原 HTML 旁建立 <code>HTMLeditor-backups</code> 資料夾。單檔開啟時，第一次存回會使用原檔所在資料夾。</p><div class="end"><button data-close>取消</button><button id="saveSettings" class="primary">儲存設定</button></div></dialog>
+<dialog id="tableDialog"><h2>插入表格</h2><p>先點選要插入的位置，再設定表格大小。表格會插入目前文字區塊。</p><label>列數 <input id="rows" type="number" value="3" min="1" max="20"></label>　<label>欄數 <input id="cols" type="number" value="3" min="1" max="12"></label><div class="end"><button data-close>取消</button><button id="makeTable" class="primary">插入表格</button></div></dialog>
+<dialog id="helpDialog"><h2>幾個字，直接在頁面上改。</h2><ol><li><b>開啟：</b>只有一個檔案用「開啟 HTML」。圖片、CSS 在旁邊時用「開啟資料夾」，選含有 HTML 的最上層資料夾。</li><li><b>編輯：</b>點文字或拖選文字，再使用工具列。下方箭頭及頁次選單可翻頁；文字內的方向鍵用來移動游標。清單按 Enter 新增下一項，Shift+Enter 在同一項換行。「清除格式」會移除選取文字的粗體、顏色、底線等行內格式；引用段落可用「一般段落」切回。Ctrl+Z 撤銷、Ctrl+Y 重做。插入圖片會將新圖片內嵌到 HTML，因此會增加檔案大小。</li><li><b>檢查：</b>按「放映檢查」，原本的翻頁鍵和互動便恢復；按「回到編輯」留在同一頁。</li><li><b>儲存：</b>「存回原檔」會使用開啟時的原檔 handle 與原父資料夾；預設不建立備份。到「設定」開啟備份後，才會在原檔旁建立 HTMLeditor-backups 資料夾並先備份再覆寫。另存時請避開原檔名。</li></ol><p><b>顯示：</b>右上角可切換日間／夜間模式；選擇會自動記住。到「設定」可開啟或關閉存回前備份。</p><p><b>存不進去：</b>未授權、檔案唯讀、原檔被其他程式修改、瀏覽器限制寫入，均可改用「另存新檔」。資料夾版的另存檔必須放回原 HTML 同一層，圖片和 CSS 不會複製。</p><p>請使用 Edge。其他瀏覽器或一般 HTTP 網站可能只有「下載另存」功能。支援本工具已辨識的 SLIDES 資料陣列與一般 HTML 文字區塊；canvas 文字、複雜框架產生的內容可能無法編輯。工具列只能編輯來源中已辨識的文字區塊，目前不支援可自由拖曳、獨立於原文字區塊的 PPT 式文字框。未加框的圖表標籤維持原樣。</p><div class="end"><button class="primary" data-close>開始編輯</button></div></dialog>
+<script>/* Standalone source-to-preview engine for offline HTML presentations.
+ * It deliberately does not execute deck JavaScript. It scans SLIDES literals,
+ * annotates only source-backed HTML units, and patches only changed ranges.
+ */
+(function (root, factory) {
+  if (typeof module === 'object' && module.exports) module.exports = factory();
+  else root.SourceEngine = factory();
+})(typeof globalThis !== 'undefined' ? globalThis : this, function () {
+  'use strict';
+
+  class SourceEngineError extends Error {
+    constructor(code, message, details) {
+      super(message);
+      this.name = 'SourceEngineError';
+      this.code = code;
+      if (details) this.details = details;
+    }
+  }
+
+  const SCALAR_KEYS = new Set(['title', 'step', 'sub', 'meta', 'kicker', 'cap']);
+  const HTML_KEYS = new Set(['html']);
+  const VOID = new Set(['area', 'base', 'br', 'col', 'embed', 'hr', 'img', 'input', 'link', 'meta', 'param', 'source', 'track', 'wbr']);
+  const BLOCK = new Set(['address', 'article', 'aside', 'blockquote', 'body', 'dd', 'div', 'dl', 'dt', 'fieldset', 'figcaption', 'figure', 'footer', 'form', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'header', 'hr', 'li', 'main', 'nav', 'ol', 'p', 'pre', 'section', 'table', 'tbody', 'td', 'tfoot', 'th', 'thead', 'tr', 'ul']);
+  const DYNAMIC_CHART_TEXTS = [
+    '死亡 69（2.1%）',
+    '重伤 396（12.3%）',
+    '轻伤 2,751（85.5%）',
+    '其中：无差别伤害　2024 年 1 件 / 5 人受伤',
+    '5 人 ＝ 全部的 0.16%',
+    '案件：JR 山手线 御徒町—秋叶原 行驶车厢内（2024-01-03，持刀刺伤 5 人）',
+    '占比决定不了资源分配，后果结构才决定。',
+    '2024 年 10 件，为 2008 年以来最高'
+  ];
+  const ELIGIBLE = new Set([
+    'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'p', 'li', 'td', 'th', 'figcaption', 'blockquote',
+    'div', 'span', 'b', 'strong', 'em', 'i', 'u', 's', 'del', 'ins', 'small', 'big',
+    'code', 'mark', 'q', 'cite', 'abbr', 'time', 'sup', 'sub', 'label', 'caption', 'ul', 'ol',
+    'button', 'a', 'dt', 'dd'
+  ]);
+
+  function fail(code, message, details) { throw new SourceEngineError(code, message, details); }
+  function isIdentStart(c) { return !!c && /[A-Za-z_$]/.test(c); }
+  function isIdent(c) { return !!c && /[A-Za-z0-9_$]/.test(c); }
+
+  function skipSpace(source, i) {
+    while (i < source.length) {
+      if (/\s/.test(source[i])) { i++; continue; }
+      if (source[i] === '/' && source[i + 1] === '/') {
+        i += 2; while (i < source.length && source[i] !== '\n') i++;
+        continue;
+      }
+      if (source[i] === '/' && source[i + 1] === '*') {
+        const end = source.indexOf('*/', i + 2);
+        if (end < 0) fail('UNTERMINATED_COMMENT', 'Unterminated JavaScript comment.');
+        i = end + 2; continue;
+      }
+      break;
+    }
+    return i;
+  }
+
+  function decodeEscape(source, i, quote) {
+    const c = source[i];
+    const map = { n: '\n', r: '\r', t: '\t', b: '\b', f: '\f', v: '\v', '0': '\0' };
+    if (c === '\n') return { value: '', end: i + 1 };
+    if (c === '\r') return { value: '', end: source[i + 1] === '\n' ? i + 2 : i + 1 };
+    if (c === 'x') {
+      const h = source.slice(i + 1, i + 3);
+      if (!/^[0-9a-f]{2}$/i.test(h)) fail('INVALID_ESCAPE', 'Invalid hexadecimal escape in source string.');
+      return { value: String.fromCharCode(parseInt(h, 16)), end: i + 3 };
+    }
+    if (c === 'u') {
+      if (source[i + 1] === '{') {
+        const close = source.indexOf('}', i + 2);
+        const h = source.slice(i + 2, close < 0 ? source.length : close);
+        if (close < 0 || !/^[0-9a-f]+$/i.test(h)) fail('INVALID_ESCAPE', 'Invalid Unicode code-point escape in source string.');
+        return { value: String.fromCodePoint(parseInt(h, 16)), end: close + 1 };
+      }
+      const h = source.slice(i + 1, i + 5);
+      if (!/^[0-9a-f]{4}$/i.test(h)) fail('INVALID_ESCAPE', 'Invalid Unicode escape in source string.');
+      return { value: String.fromCharCode(parseInt(h, 16)), end: i + 5 };
+    }
+    return { value: Object.prototype.hasOwnProperty.call(map, c) ? map[c] : c, end: i + 1 };
+  }
+
+  /** Parse one JS string literal and retain a decoded-index -> raw-index map. */
+  function parseLiteral(source, start) {
+    const quote = source[start];
+    if (!['"', "'", '`'].includes(quote)) fail('EXPECTED_STRING', 'Expected a quoted JavaScript string.', { start });
+    let i = start + 1, value = '';
+    const map = [i];
+    while (i < source.length) {
+      const c = source[i];
+      if (c === quote) {
+        return { quote, start, end: i + 1, contentStart: start + 1, contentEnd: i, value, map };
+      }
+      if (quote === '`' && c === '$' && source[i + 1] === '{') {
+        fail('INTERPOLATION_UNSUPPORTED', 'Template interpolation (${...}) is unsupported because source must remain static.', { start, offset: i });
+      }
+      if (c === '\\') {
+        const escaped = decodeEscape(source, i + 1, quote);
+        for (let n = 0; n < escaped.value.length; n++) map.push(i);
+        value += escaped.value;
+        i = escaped.end;
+        map[value.length] = i;
+      } else {
+        value += c;
+        i++;
+        map[value.length] = i;
+      }
+    }
+    fail('UNTERMINATED_STRING', 'Unterminated JavaScript string literal.', { start });
+  }
+
+  function findMatching(source, start, open, close) {
+    let depth = 0, i = start;
+    while (i < source.length) {
+      const c = source[i];
+      if (c === '"' || c === "'" || c === '`') { i = parseLiteral(source, i).end; continue; }
+      if (c === '/' && source[i + 1] === '/') { i += 2; while (i < source.length && source[i] !== '\n') i++; continue; }
+      if (c === '/' && source[i + 1] === '*') { const e = source.indexOf('*/', i + 2); if (e < 0) fail('UNTERMINATED_COMMENT', 'Unterminated JavaScript comment.'); i = e + 2; continue; }
+      if (c === open) depth++;
+      else if (c === close && --depth === 0) return i;
+      i++;
+    }
+    fail('UNBALANCED_SOURCE', `Unbalanced ${open}${close} in source.`, { start });
+  }
+
+  function findSlides(source) {
+    const re = /(?:const|let|var)\s+SLIDES\s*=\s*/g;
+    const m = re.exec(source);
+    if (!m) return null;
+    const arrayStart = source.indexOf('[', re.lastIndex);
+    if (arrayStart < 0) fail('INVALID_SLIDES', 'SLIDES declaration has no array.');
+    return { start: arrayStart, end: findMatching(source, arrayStart, '[', ']') };
+  }
+
+  function parseObjectProperties(source, start, end, slideIndex) {
+    const out = [];
+    let i = start + 1;
+    while (i < end) {
+      i = skipSpace(source, i);
+      if (i >= end || source[i] === '}') break;
+      if (source[i] === ',') { i++; continue; }
+      if (!isIdentStart(source[i])) {
+        // Skip a spread or an unexpected expression without executing it.
+        const next = source.indexOf(',', i);
+        i = next < 0 || next > end ? end : next + 1;
+        continue;
+      }
+      const keyStart = i++;
+      while (i < end && isIdent(source[i])) i++;
+      const key = source.slice(keyStart, i);
+      i = skipSpace(source, i);
+      if (source[i] !== ':') {
+        while (i < end && source[i] !== ',') i++;
+        continue;
+      }
+      i = skipSpace(source, i + 1);
+      if (source[i] === '"' || source[i] === "'" || source[i] === '`') {
+        const literal = parseLiteral(source, i);
+        out.push({ key, slide: slideIndex, literal });
+        i = literal.end;
+      } else {
+        // Skip non-string values, respecting nested structures and strings.
+        let depth = 0;
+        while (i < end) {
+          const c = source[i];
+          if (c === '"' || c === "'" || c === '`') { i = parseLiteral(source, i).end; continue; }
+          if ('([{'.includes(c)) depth++;
+          else if (')]}'.includes(c)) { if (depth === 0) break; depth--; }
+          if (depth === 0 && c === ',') break;
+          i++;
+        }
+      }
+      i = skipSpace(source, i);
+      if (source[i] === ',') i++;
+    }
+    return out;
+  }
+
+  function parseSlides(source, range) {
+    const entries = [];
+    let i = range.start + 1, slideIndex = 0;
+    while (i < range.end) {
+      i = skipSpace(source, i);
+      if (i >= range.end) break;
+      if (source[i] === ',') { i++; continue; }
+      if (source[i] !== '{') {
+        const next = source.indexOf(',', i);
+        i = next < 0 ? range.end : next + 1;
+        continue;
+      }
+      const end = findMatching(source, i, '{', '}');
+      entries.push({ start: i, end: end + 1, index: slideIndex++, props: parseObjectProperties(source, i, end, slideIndex - 1) });
+      i = end + 1;
+    }
+    return entries;
+  }
+
+  function parseTagEnd(html, start) {
+    let quote = null;
+    for (let i = start; i < html.length; i++) {
+      const c = html[i];
+      if (quote) { if (c === quote) quote = null; continue; }
+      if (c === '"' || c === "'") { quote = c; continue; }
+      if (c === '>') return i + 1;
+    }
+    return -1;
+  }
+
+  function parseHTML(html) {
+    const root = { type: 'root', start: 0, end: html.length, children: [], parent: null };
+    const stack = [root];
+    let i = 0;
+    while (i < html.length) {
+      if (html[i] !== '<') {
+        const next = html.indexOf('<', i);
+        const end = next < 0 ? html.length : next;
+        if (end > i) stack[stack.length - 1].children.push({ type: 'text', start: i, end, parent: stack[stack.length - 1] });
+        i = end; continue;
+      }
+      if (html.startsWith('<!--', i)) {
+        const end = html.indexOf('-->', i + 4);
+        i = end < 0 ? html.length : end + 3; continue;
+      }
+      const end = parseTagEnd(html, i + 1);
+      if (end < 0) {
+        stack[stack.length - 1].children.push({ type: 'text', start: i, end: html.length, parent: stack[stack.length - 1] });
+        break;
+      }
+      const token = html.slice(i, end);
+      const close = /^<\s*\/\s*([A-Za-z][\w:-]*)/.exec(token);
+      if (close) {
+        const tag = close[1].toLowerCase();
+        let at = stack.length - 1;
+        while (at > 0 && stack[at].tag !== tag) at--;
+        if (at > 0) {
+          const node = stack[at];
+          node.closeStart = i; node.closeEnd = end; node.end = end;
+          stack.length = at;
+        }
+        i = end; continue;
+      }
+      const open = /^<\s*([A-Za-z][\w:-]*)/.exec(token);
+      if (!open || /^<!/.test(token) || /^<\?/.test(token)) { i = end; continue; }
+      const tag = open[1].toLowerCase();
+      const node = { type: 'element', tag, start: i, openEnd: end, openNameEnd: i + open[0].length, end, closeStart: end, children: [], parent: stack[stack.length - 1] };
+      stack[stack.length - 1].children.push(node);
+      const selfClose = /\/\s*>$/.test(token) || VOID.has(tag);
+      if (!selfClose) stack.push(node);
+      i = end;
+    }
+    function closeOpen(n) { if (n.type === 'element') { if (n.closeStart == null) n.closeStart = n.end = html.length; n.children.forEach(closeOpen); } else if (n.children) n.children.forEach(closeOpen); }
+    closeOpen(root);
+    return root;
+  }
+
+  function hasDirectText(node, html) {
+    return node.children.some(c => c.type === 'text' && /\S/.test(html.slice(c.start, c.end)));
+  }
+  function hasNestedBlock(node) {
+    let found = false;
+    function walk(n) {
+      for (const c of n.children || []) if (c.type === 'element') {
+        if (c !== node && BLOCK.has(c.tag)) found = true;
+        walk(c);
+      }
+    }
+    walk(node);
+    return found;
+  }
+  function hasButtonDescendant(node) {
+    let found = false;
+    function walk(n) { for (const c of n.children || []) if (c.type === 'element') { if (c.tag === 'button') found = true; walk(c); } }
+    walk(node); return found;
+  }
+  function hasAttribute(node, html, name) {
+    return new RegExp(`\\b${name}\\s*(?:=|\\s|>)`, 'i').test(html.slice(node.start, node.openEnd));
+  }
+  function candidateNodes(root, html) {
+    const all = [];
+    function walk(n) {
+      for (const c of n.children || []) if (c.type === 'element') {
+        const textGroup = c.tag === 'div' && hasAttribute(c, html, 'data-editor-textgroup');
+        if (textGroup || (ELIGIBLE.has(c.tag) && (hasDirectText(c, html) || c.tag === 'ul' || c.tag === 'ol') && (c.tag === 'ul' || c.tag === 'ol' || !hasNestedBlock(c)))) all.push(c);
+        walk(c);
+      }
+    }
+    walk(root);
+    // Prefer the outer editable paragraph, including text around inline buttons.
+    return all.filter(n => {
+      let ancestor = n.parent;
+      while (ancestor && ancestor.type !== 'root') {
+        if (all.includes(ancestor)) return false;
+        ancestor = ancestor.parent;
+      }
+      return true;
+    });
+  }
+
+  function stripHeAttributes(html) {
+    return String(html).replace(/\sdata-he-[\w:-]+(?:\s*=\s*(?:"[^"]*"|'[^']*'|[^\s>]+))?/gi, '');
+  }
+  function cleanHTML(html) { return stripHeAttributes(String(html)); }
+  function encodeString(value, quote) {
+    let out = '';
+    for (let i = 0; i < value.length; i++) {
+      const c = value[i];
+      if (c === '\\') out += '\\\\';
+      else if (c === quote) out += '\\' + c;
+      else if (c === '\n') out += '\\n';
+      else if (c === '\r') out += '\\r';
+      else if (c === '\t') out += '\\t';
+      else if (c === '\b') out += '\\b';
+      else if (c === '\f') out += '\\f';
+      else if (c === '\u2028') out += '\\u2028';
+      else if (c === '\u2029') out += '\\u2029';
+      else if (quote === '`' && c === '`') out += '\\`';
+      else if (quote === '`' && c === '$' && value[i + 1] === '{') out += '\\$';
+      else out += c;
+    }
+    return out;
+  }
+  function rawBoundary(literal, decodedOffset) {
+    const n = Math.max(0, Math.min(decodedOffset, literal.value.length));
+    return literal.map[n] == null ? literal.contentEnd : literal.map[n];
+  }
+  function applyReplacements(source, reps) {
+    const sorted = reps.slice().sort((a, b) => b.start - a.start || b.end - a.end);
+    let last = source.length;
+    for (const r of sorted) {
+      if (r.start < 0 || r.end < r.start || r.end > source.length || r.end > last) fail('OVERLAPPING_PATCH', 'Source unit ranges overlap or are invalid.', r);
+      last = r.start;
+    }
+    let out = source;
+    for (const r of sorted) out = out.slice(0, r.start) + r.text + out.slice(r.end);
+    return out;
+  }
+
+  function annotateHTMLValue(value, literal, property, context, nextId) {
+    const tree = parseHTML(value);
+    const nodes = candidateNodes(tree, value);
+    const units = [];
+    const inserts = [];
+    for (const node of nodes) {
+      const id = nextId();
+      const mode = 'outer';
+      const decodedStart = mode === 'outer' ? node.start : node.openEnd;
+      const decodedEnd = mode === 'outer' ? node.end : node.closeStart;
+      const start = rawBoundary(literal, decodedStart);
+      const end = rawBoundary(literal, decodedEnd);
+      const original = value.slice(decodedStart, decodedEnd);
+      const outer = value.slice(node.start, node.end);
+      units.push({ id, start, end, original, baseline: outer, encoding: literal.quote, mode, kind: 'html', property, slide: context.slide, literalStart: literal.start, literalEnd: literal.end });
+      // Insert before the opening tag's >. Using the raw map keeps huge image
+      // and base64 payload bytes byte-for-byte identical.
+      const attrAt = rawBoundary(literal, node.openNameEnd);
+      inserts.push({ start: attrAt, end: attrAt, text: encodeString(` data-he-unit="${id}" data-he-kind="html"`, literal.quote) });
+    }
+    return { units, replacements: inserts };
+  }
+
+  function annotateDynamicChart(source, nextId) {
+    const units = [], replacements = [], seen = new Set();
+    const add = (start, end, openStart, openEnd, existingId, runtime=false) => {
+      if (start < 0 || end <= start || seen.has(start)) return;
+      const original = source.slice(start, end);
+      const id = existingId == null ? nextId() : Number(existingId);
+      seen.add(start);
+      units.push({ id, start, end, original, baseline: original, encoding: null, mode: 'chart', kind: 'chart', property: 'chartText', slide: null, literalStart: null, literalEnd: null, markerAt: runtime ? null : openEnd });
+      if (existingId == null && !runtime) replacements.push({ start: openEnd, end: openEnd, text: ` data-he-unit="${id}" data-he-kind="chart"` });
+    };
+    const marked = /<text\b([^>]*)\bdata-he-unit=["'](\d+)["'][^>]*\bdata-he-kind=["']chart["'][^>]*>([\s\S]*?)<\/text>/gi;
+    let m;
+    while ((m = marked.exec(source))) {
+      const start = m.index + m[0].indexOf('>') + 1;
+      add(start, start + m[3].length, m.index, start - 1, m[2]);
+    }
+    for (const text of DYNAMIC_CHART_TEXTS) {
+      let from = 0;
+      while (true) {
+        const start = source.indexOf(text, from);
+        if (start < 0) break;
+        const lineStart = source.lastIndexOf('\n', start) + 1;
+        const line = source.slice(lineStart, start);
+        const open = source.lastIndexOf('<text', start);
+        const close = open < 0 ? -1 : source.indexOf('>', open);
+        const direct = open >= 0 && close >= 0 && close < start && !source.slice(close + 1, start).includes('`');
+        const already = open >= 0 && close >= 0 && /data-he-unit\s*=|data-he-kind\s*=/.test(source.slice(open, close));
+        if (!already) add(start, start + text.length, open, close, null, !direct);
+        from = start + text.length;
+      }
+    }
+    return { units, replacements };
+  }
+
+  function annotateScalarValue(value, literal, property, context, nextId) {
+    if (!value || !/\S/.test(value)) return { units: [], replacements: [] };
+    const id = nextId();
+    const units = [{ id, start: literal.contentStart, end: literal.contentEnd, original: value, baseline: value, encoding: literal.quote, mode: 'scalar', kind: 'scalar', property, slide: context.slide, literalStart: literal.start, literalEnd: literal.end }];
+    const wrapped = `<span data-he-unit="${id}" data-he-kind="scalar">${value}</span>`;
+    return { units, replacements: [{ start: literal.contentStart, end: literal.contentEnd, text: encodeString(wrapped, literal.quote) }] };
+  }
+
+  function detectStaticHTML(source) {
+    return /^\s*(?:<!doctype\s+html\b|<html\b)/i.test(source) || (/<body\b/i.test(source) && !findSlides(source));
+  }
+
+  function prepareSlides(source, slideRange) {
+    const slides = parseSlides(source, slideRange);
+    const records = [];
+    for (const slide of slides) for (const prop of slide.props) {
+      if (SCALAR_KEYS.has(prop.key) || HTML_KEYS.has(prop.key)) records.push(prop);
+    }
+    records.sort((a, b) => a.literal.start - b.literal.start);
+    let id = 1;
+    const units = [], replacements = [];
+    for (const prop of records) {
+      const context = { slide: prop.slide };
+      const result = HTML_KEYS.has(prop.key)
+        ? annotateHTMLValue(prop.literal.value, prop.literal, prop.key, context, () => id++)
+        : annotateScalarValue(prop.literal.value, prop.literal, prop.key, context, () => id++);
+      units.push(...result.units); replacements.push(...result.replacements);
+    }
+    const dynamic = annotateDynamicChart(source, () => id++);
+    units.push(...dynamic.units); replacements.push(...dynamic.replacements);
+    let preview = applyReplacements(source, replacements);
+    const chartMap = dynamic.units.map(u => [u.original, u.id]);
+    if (chartMap.length) {
+      const payload = JSON.stringify(chartMap).replace(/</g, '\\u003c');
+      const markerScript = `<script>(function(){const M=${payload};const mark=()=>{for(const t of document.querySelectorAll('svg text')){if(t.dataset.heUnit)continue;const hit=M.find(x=>x[0]===t.textContent);if(hit){t.dataset.heUnit=String(hit[1]);t.dataset.heKind='chart';}}};new MutationObserver(mark).observe(document.documentElement,{childList:true,subtree:true});if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',mark);else mark();})();<\/script>`;
+      preview = /<\/body>/i.test(preview) ? preview.replace(/<\/body>/i, markerScript + '</body>') : preview + markerScript;
+    }
+    return { preview, units, kind: 'slides' };
+  }
+
+  function prepareStatic(source) {
+    const tree = parseHTML(source);
+    const nodes = candidateNodes(tree, source);
+    let id = 1; const units = []; const replacements = [];
+    for (const node of nodes) {
+      const mode = 'outer';
+      const start = mode === 'outer' ? node.start : node.openEnd;
+      const end = mode === 'outer' ? node.end : node.closeStart;
+      const original = source.slice(start, end);
+      units.push({ id: id++, start, end, original, baseline: source.slice(node.start, node.end), encoding: null, mode, kind: 'html', property: null, slide: null });
+      replacements.push({ start: node.openNameEnd, end: node.openNameEnd, text: ` data-he-unit="${id - 1}" data-he-kind="html"` });
+    }
+    return { preview: applyReplacements(source, replacements), units, kind: 'html' };
+  }
+
+  let cachedSource = null, cachedPrepared = null;
+  function prepare(source) {
+    if (typeof source !== 'string') fail('INVALID_SOURCE', 'SourceEngine.prepare expects a source string.');
+    if (source === cachedSource && cachedPrepared) return cachedPrepared;
+    const slides = findSlides(source);
+    let result;
+    if (slides) result = prepareSlides(source, slides);
+    else if (detectStaticHTML(source)) result = prepareStatic(source);
+    else fail('UNSUPPORTED_SOURCE', 'Unsupported source: expected a SLIDES array or standalone HTML document.');
+    cachedSource = source; cachedPrepared = result; return result;
+  }
+
+  function extractInner(edited) {
+    const clean = cleanHTML(edited);
+    const m = /^\s*<([A-Za-z][\w:-]*)\b[^>]*>([\s\S]*)<\/\1>\s*$/i.exec(clean);
+    return m ? m[2] : clean;
+  }
+  function extractScalar(edited) {
+    const clean = cleanHTML(edited);
+    const m = /^\s*<span\b[^>]*>([\s\S]*)<\/span>\s*$/i.exec(clean);
+    return m ? m[1] : clean;
+  }
+  function extractChart(edited) {
+    const clean = cleanHTML(edited);
+    const m = /^\s*<text\b[^>]*>([\s\S]*)<\/text>\s*$/i.exec(clean);
+    return m ? m[1] : clean.replace(/<[^>]+>/g, '');
+  }
+
+  function patch(source, changes) {
+    if (typeof source !== 'string') fail('INVALID_SOURCE', 'SourceEngine.patch expects a source string.');
+    const prepared = prepare(source);
+    const list = Array.isArray(changes)
+      ? changes
+      : changes && typeof changes === 'object'
+        ? Object.keys(changes).map(id => ({ id: Number(id), html: changes[id] }))
+        : [];
+    const byId = new Map(prepared.units.map(u => [String(u.id), u]));
+    const reps = [];
+    const seen = new Set();
+    for (const change of list) {
+      if (!change || change.id == null) fail('INVALID_CHANGE', 'Each change must include a numeric unit id.');
+      const unit = byId.get(String(change.id));
+      if (!unit) fail('UNKNOWN_UNIT', `Unknown source unit id: ${change.id}.`, { id: change.id });
+      if (seen.has(String(unit.id))) fail('DUPLICATE_CHANGE', `Unit ${unit.id} appears more than once.`);
+      seen.add(String(unit.id));
+      const edited = change.html != null ? change.html : (change.outerHTML != null ? change.outerHTML : change.value);
+      if (change.initial != null && edited === change.initial) continue;
+      if (edited == null) fail('INVALID_CHANGE', `Unit ${unit.id} has no html/value payload.`);
+      let value;
+      if (unit.mode === 'scalar') value = extractScalar(String(edited));
+       else if (unit.mode === 'chart') value = extractChart(String(edited));
+      else if (unit.mode === 'outer') value = cleanHTML(String(edited));
+      else value = extractInner(String(edited));
+      // For text-only edits retain original tag spelling, attribute quotes and spacing.
+      if (change.initial != null && unit.mode === 'outer') {
+        const initial = cleanHTML(String(change.initial));
+        const tags = s => [...s.matchAll(/<[^>]+>/g)].map(m => m[0]);
+        const a = tags(initial), b = tags(value), o = tags(unit.original);
+        if (a.length === b.length && a.length === o.length && a.every((t,i) => t === b[i])) {
+          let index = 0;
+          value = value.replace(/<[^>]+>/g, () => o[index++]);
+        }
+      }
+      if (value === unit.original) continue; // exact no-op, preserving every source byte
+      let prefix = 0, suffix = 0;
+      while (prefix < unit.original.length && prefix < value.length && unit.original[prefix] === value[prefix]) prefix++;
+      while (suffix < unit.original.length - prefix && suffix < value.length - prefix && unit.original[unit.original.length - 1 - suffix] === value[value.length - 1 - suffix]) suffix++;
+      // Do not split UTF-16 pairs or a new template interpolation at patch edges.
+      if (prefix > 0 && /[\uD800-\uDBFF]/.test(value[prefix-1]) && /[\uDC00-\uDFFF]/.test(value[prefix] || '')) prefix--;
+      if (suffix > 0 && /[\uDC00-\uDFFF]/.test(value[value.length-suffix]) && /[\uD800-\uDBFF]/.test(value[value.length-suffix-1] || '')) suffix--;
+      if (unit.encoding === '`' && prefix > 0 && value[prefix-1] === '$' && value[prefix] === '{') prefix--;
+      const replacement = value.slice(prefix, value.length - suffix);
+      if (unit.mode === 'chart') {
+         reps.push({ start: unit.start + prefix, end: unit.end - suffix, text: replacement });
+         if (unit.markerAt != null && !/data-he-unit\s*=|data-he-kind\s*=/.test(source.slice(Math.max(0, unit.markerAt - 240), unit.start))) reps.push({ start: unit.markerAt, end: unit.markerAt, text: ` data-he-unit="${unit.id}" data-he-kind="chart"` });
+       } else if (prepared.kind === 'html') {
+        reps.push({ start: unit.start + prefix, end: unit.end - suffix, text: replacement });
+      } else {
+        const literal = parseLiteral(source, unit.literalStart);
+        const decodedOffset = literal.map.indexOf(unit.start);
+        if (decodedOffset < 0) fail('INVALID_RANGE', 'Cannot locate source string boundary.');
+        reps.push({ start: rawBoundary(literal, decodedOffset + prefix), end: rawBoundary(literal, decodedOffset + unit.original.length - suffix), text: encodeString(replacement, unit.encoding) });
+      }
+    }
+    return reps.length ? applyReplacements(source, reps) : source;
+  }
+
+  return { prepare, patch, SourceEngineError, _internals: { parseLiteral, parseHTML, stripHeAttributes, encodeString } };
+});
+</script>
+<script>function editorBridge(channel) {
+'use strict';
+let editing=true, page=0, pages=[], selected=null, selectedBox=null, savedRange=null, applying=false;
+const history=[], future=[], known=new Map();
+const send=(type,data={})=>parent.postMessage({he:channel,type,...data},'*');
+const unitOf=n=>(n?.nodeType===1?n:n?.parentElement)?.closest('[data-he-unit]');
+function listPages(){
+ let a=[...document.querySelectorAll('.slides>section,.slide,[data-slide]')];
+ a=a.filter(n=>!a.some(p=>p!==n&&p.contains(n)));
+ return a.length?a:[document.body];
+}
+function cleanHTML(el){const c=el.cloneNode(true); for(const n of [c,...c.querySelectorAll('*')])for(const a of [...n.attributes])if(a.name==='contenteditable'||a.name.startsWith('data-he-')||a.name==='spellcheck')n.removeAttribute(a.name);return c.outerHTML;}
+function remember(){const s=getSelection();if(s.rangeCount&&unitOf(s.anchorNode)){selected=unitOf(s.anchorNode);const node=s.anchorNode.nodeType===1?s.anchorNode:s.anchorNode.parentElement;selectedBox=node.closest('[data-editor-textbox]');savedRange=s.getRangeAt(0).cloneRange();send('selection',{id:selected.dataset.heUnit});}}
+function scalar(el){return el?.dataset.heKind==='scalar';}
+function focusContents(el,select=false){el.focus();const r=document.createRange();r.selectNodeContents(el);if(!select)r.collapse(false);const s=getSelection();s.removeAllRanges();s.addRange(r);remember();}
+function openChartEditor(el){
+ const old=document.querySelector('[data-he-chart-editor]');if(old)old.remove();
+ selected=el;selectedBox=null;const r=el.getBoundingClientRect();const input=document.createElement('div');input.setAttribute('data-he-chart-editor','');input.contentEditable='true';input.spellcheck=false;input.textContent=el.textContent;input.style.cssText=`position:fixed;left:${r.left}px;top:${r.top}px;width:${Math.max(180,r.width+40)}px;min-height:${Math.max(24,r.height+8)}px;z-index:99999;background:#fff;color:#111;border:2px solid #278d86;border-radius:4px;padding:2px 5px;font:700 16px/1.3 sans-serif;white-space:nowrap;box-shadow:0 2px 8px #0004`;
+ document.body.append(input);el.style.visibility='hidden';
+ input.addEventListener('click',e=>e.stopPropagation());input.addEventListener('mousedown',e=>e.stopPropagation());input.addEventListener('pointerdown',e=>e.stopPropagation());input.addEventListener('keydown',e=>e.stopPropagation());input.addEventListener('keyup',e=>e.stopPropagation());input.addEventListener('beforeinput',e=>e.stopPropagation());input.addEventListener('input',e=>e.stopPropagation());
+ input.focus();const range=document.createRange();range.selectNodeContents(input);const sel=getSelection();sel.removeAllRanges();sel.addRange(range);
+ let finished=false;const finish=()=>{if(finished)return;finished=true;el.textContent=input.textContent;el.style.visibility='';if(input.parentNode)input.parentNode.removeChild(input);capture();selected=el;};input.addEventListener('input',()=>{el.textContent=input.textContent;capture();});input.addEventListener('blur',finish);input.addEventListener('keydown',e=>{if(e.key==='Escape'){e.preventDefault();input.textContent=el.textContent;finish();}else if(e.key==='Enter'){e.preventDefault();finish();}});
+}
+function textBoxCommand(cmd){
+ if(cmd==='deleteTextBox'){
+  if(!selected?.isConnected||!selectedBox?.isConnected||selected===selectedBox||!selected.contains(selectedBox)){send('notice',{text:'請先點選新增的文字框，再按「刪除文字框」。原有內容請直接選取文字編輯。'});return;}
+  capture();selectedBox.remove();selectedBox=null;savedRange=null;
+  if(selected.hasAttribute('data-editor-textgroup')&&!selected.querySelector('[data-editor-textbox]')&&selected.childElementCount===1){const original=selected.firstElementChild;original.dataset.heUnit=selected.dataset.heUnit;original.dataset.heKind='html';selected.replaceWith(original);known.get(original.dataset.heUnit).el=original;selected=original;register();}
+  focusContents(selected);capture();return;
+ }
+ pages=listPages();const active=pages[currentPage()];const canHost=el=>!scalar(el)&&/^(DIV|P|H[1-6]|BLOCKQUOTE|UL|OL|TD|TH|FIGCAPTION)$/.test(el.tagName);let host=selected?.isConnected&&active?.contains(selected)&&canHost(selected)?selected:null;
+ if(!host)host=[...(active?.querySelectorAll('[data-he-unit]')||[])].find(canHost);
+ if(!host){send('notice',{text:'此頁沒有可回寫的正文區塊，請先切換到含正文的頁面，再新增文字框。'});return;}
+ capture();selected=host;
+ // Keep every added box inside an existing source unit, so SourceEngine can persist it.
+ if(/^(UL|OL)$/.test(host.tagName)){
+  const li=document.createElement('li');li.setAttribute('data-editor-textbox','');li.textContent='新增文字';host.append(li);selectedBox=li;
+ }else{
+  if(!/^(DIV|TD|TH|BLOCKQUOTE)$/.test(host.tagName)){
+   const wrapper=document.createElement('div');wrapper.style.display='contents';wrapper.setAttribute('data-editor-textgroup','');wrapper.dataset.heUnit=host.dataset.heUnit;wrapper.dataset.heKind='html';
+   host.removeAttribute('data-he-unit');host.removeAttribute('data-he-kind');host.removeAttribute('contenteditable');host.removeAttribute('spellcheck');host.replaceWith(wrapper);wrapper.append(host);known.get(wrapper.dataset.heUnit).el=wrapper;selected=wrapper;host=wrapper;
+  }
+  const box=document.createElement('div');box.setAttribute('data-editor-textbox','');box.style.cssText='display:block;min-height:1.5em;margin:8px 0;padding:4px 8px;white-space:pre-wrap';box.textContent='新增文字';host.append(box);selectedBox=box;
+ }
+ register();focusContents(selectedBox,true);capture();
+}
+function register(){
+ const seen=new Set();
+ for(const el of document.querySelectorAll('[data-he-unit]')){
+  const id=el.dataset.heUnit;if(seen.has(id)){el.removeAttribute('data-he-unit');el.removeAttribute('contenteditable');continue;}seen.add(id);
+  if(!known.has(id)){known.set(id,{el,initial:cleanHTML(el),last:cleanHTML(el)});}else{known.get(id).el=el;}
+  el.contentEditable=editing?'true':'false';el.spellcheck=false;
+ }
+}
+function currentPage(){pages=listPages();let i=pages.findIndex(el=>el.classList.contains('on')||el.classList.contains('present')||el.getAttribute('aria-hidden')==='false');if(i<0)i=pages.findIndex(el=>{let s=getComputedStyle(el);return s.display!=='none'&&s.visibility!=='hidden'&&el.getBoundingClientRect().width>0;});return i<0?page:i;}
+function notifyPage(){const i=currentPage();page=i;send('page',{page:i,total:pages.length});}
+function go(i){
+ pages=listPages();i=Math.max(0,Math.min(pages.length-1,i));
+ if(typeof window.show==='function'){window.show(i);}
+ else if(window.Reveal?.slide){const p=pages[i];window.Reveal.slide([...p.parentNode.children].indexOf(p));}
+ else if(pages.length>1){for(const [k,p]of pages.entries()){p.style.display=k===i?(getComputedStyle(p).display==='none'?'flex':getComputedStyle(p).display):'none';p.classList.toggle('on',k===i);}}
+ page=i;notifyPage();
+}
+function capture(){if(applying)return;for(const [id,v]of known){if(!v.el.isConnected)continue;const now=cleanHTML(v.el);if(now!==v.last){history.push({id,before:v.last,after:now});future.length=0;v.last=now;send('change',{id,html:now,initial:v.initial});}}send('history',{undo:history.length,redo:future.length});}
+function applyEntry(entry,undo){const v=known.get(entry.id);if(!v)return;const t=document.createElement('template');t.innerHTML=undo?entry.before:entry.after;const next=t.content.firstElementChild;if(!next||t.content.childElementCount!==1)throw new Error('此操作產生了多個獨立區塊，請撤銷後重新插入。');next.dataset.heUnit=entry.id;next.dataset.heKind=v.el.dataset.heKind||'html';v.el.replaceWith(next);v.el=next;v.last=cleanHTML(next);selected=next;selectedBox=null;savedRange=null;register();send('change',{id:entry.id,html:v.last,initial:v.initial});}
+function undoRedo(undo){capture();const from=undo?history:future,to=undo?future:history;const entry=from.pop();if(entry){applying=true;applyEntry(entry,undo);applying=false;to.push(entry);}send('history',{undo:history.length,redo:future.length});}
+function restore(){if(!selected?.isConnected)return false;selected.focus();const s=getSelection();s.removeAllRanges();if(savedRange&&selected.contains(savedRange.commonAncestorContainer))s.addRange(savedRange);else{const r=document.createRange();r.selectNodeContents(selected);r.collapse(false);s.addRange(r);}return true;}
+function clearSelectionInline(){const s=getSelection();if(!s.rangeCount||s.isCollapsed){if(savedRange&&selected?.contains(savedRange.commonAncestorContainer)){s.removeAllRanges();s.addRange(savedRange.cloneRange());}else{send('notice',{text:'請先選取要清除格式的文字。'});return;}}const range=s.getRangeAt(0).cloneRange();const root=unitOf(range.commonAncestorContainer)||selected;const anchor=range.commonAncestorContainer.nodeType===1?range.commonAncestorContainer:range.commonAncestorContainer.parentElement;const quote=anchor?.closest?.('blockquote')||root;if(quote?.tagName==='BLOCKQUOTE'&&range.toString().trim()===quote.textContent.trim()){const next=document.createElement('p');for(const a of quote.attributes){if(a.name==='data-editor-quote')continue;if(a.name==='style')continue;next.setAttribute(a.name,a.value);}next.innerHTML=quote.innerHTML;quote.replaceWith(next);const v=known.get(next.dataset.heUnit);if(v)v.el=next;selected=next;register();capture();return;}document.execCommand('removeFormat',false,null);const inline=['b','strong','i','em','u','s','strike','del','ins','mark','font','span'];for(const el of [...root.querySelectorAll(inline.join(','))]){if(el.hasAttribute('data-he-unit')||!range.intersectsNode(el))continue;if(range.containsNode(el,true)){const p=el.parentNode;while(el.firstChild)p.insertBefore(el.firstChild,el);el.remove();}else if(el.hasAttribute('style')){for(const name of ['font-weight','font-style','text-decoration','color','background-color','font-size'])el.style.removeProperty(name);if(!el.getAttribute('style'))el.removeAttribute('style');}}capture();remember();}
+ function blockTarget(){if(!selected?.isConnected)return null;const s=getSelection();let n=s?.anchorNode?.nodeType===1?s.anchorNode:s?.anchorNode?.parentElement;while(n&&n!==selected){if(/^(P|H[1-6]|BLOCKQUOTE|LI|DIV|TD|TH|FIGCAPTION)$/.test(n.tagName))return n;n=n.parentElement;}return /^(P|H[1-6]|BLOCKQUOTE|DIV|TD|TH|FIGCAPTION)$/.test(selected.tagName)?selected:null;}
+ function replaceBlock(target,tag){const next=document.createElement(tag);for(const a of target.attributes){if(a.name==='data-editor-quote'||(tag==='P'&&a.name==='style'))continue;next.setAttribute(a.name,a.value);}if(tag==='BLOCKQUOTE'){next.dataset.editorQuote='true';next.style.borderLeft='4px solid currentColor';next.style.paddingLeft='1em';}next.innerHTML=target.innerHTML;target.replaceWith(next);const v=known.get(next.dataset.heUnit);if(v){v.el=next;selected=next;}register();}
+ function selectionElement(){const s=getSelection();const n=s?.anchorNode;return n?.nodeType===1?n:n?.parentElement;}
+  function command(cmd,value){if(!editing)return;
+  
+  if(cmd==='undo'||cmd==='redo'){undoRedo(cmd==='undo');return;}if(cmd==='insertTextBox'||cmd==='deleteTextBox'){send('notice',{text:'目前版本不支援可自由拖曳的獨立文字框。請直接編輯既有文字區塊。'});return;}if(!restore()){send('notice',{text:'請先點選簡報中要編輯的文字。'});return;}const anchor=selectionElement();const block=anchor?.closest?.('p,h1,h2,h3,h4,h5,h6,blockquote,li,div,td,th,figcaption')||selected;const listRoot=anchor?.closest?.('ul,ol')||selected?.closest?.('ul,ol');
+ if(cmd==='clearFormat'){clearSelectionInline();return;}
+ if(scalar(selected)&&['insertUnorderedList','insertOrderedList'].includes(cmd)||scalar(selected)&&cmd==='insertHTML'&&/^<table\b/i.test(value||'')){send('notice',{text:'請先點選正文段落，再插入清單或表格；標題欄位適合文字與行內格式。'});return;}
+ if(['insertUnorderedList','insertOrderedList'].includes(cmd)&&listRoot){selected=listRoot;const tag=cmd==='insertOrderedList'?'OL':'UL';if(selected.tagName===tag){const next=document.createElement('div');for(const a of selected.attributes)next.setAttribute(a.name,a.value);for(const li of [...selected.children]){const p=document.createElement('p');p.innerHTML=li.innerHTML;next.append(p);}selected.replaceWith(next);const v=known.get(next.dataset.heUnit);if(v)v.el=next;selected=next;register();focusContents(next);}else{const next=document.createElement(tag);for(const a of selected.attributes)next.setAttribute(a.name,a.value);next.innerHTML=selected.innerHTML;selected.replaceWith(next);const v=known.get(next.dataset.heUnit);if(v)v.el=next;selected=next;register();focusContents(next);}capture();return;}
+  if(['insertUnorderedList','insertOrderedList'].includes(cmd)&&!listRoot){
+   if(scalar(selected)){send('notice',{text:'請先點選正文段落，再插入清單。'});return;}
+   const tag=cmd==='insertOrderedList'?'OL':'UL';const next=document.createElement(tag);for(const a of selected.attributes)next.setAttribute(a.name,a.value);const li=document.createElement('li');li.innerHTML=selected.innerHTML;next.append(li);selected.replaceWith(next);const v=known.get(next.dataset.heUnit);if(v)v.el=next;selected=next;register();focusContents(next);capture();return;
+  }
+  if(cmd==='formatBlock'&&value==='BLOCKQUOTE'&&selected?.tagName==='BLOCKQUOTE')value='P';
+  if(cmd==='formatBlock'&&scalar(selected)){
+  const wrap=document.createElement('span');wrap.style.display='block';wrap.style.margin='0';if(/^H[1-6]$/.test(value)){wrap.setAttribute('role','heading');wrap.setAttribute('aria-level',value.slice(1));wrap.style.fontSize=({H1:'2em',H2:'1.5em',H3:'1.17em',H4:'1em',H5:'.83em',H6:'.67em'})[value];wrap.style.fontWeight='bold';}else if(value==='BLOCKQUOTE'){wrap.style.borderLeft='4px solid currentColor';wrap.style.paddingLeft='1em';wrap.dataset.editorQuote='true';}else{wrap.style.fontWeight='normal';}wrap.innerHTML=selected.innerHTML;selected.replaceChildren(wrap);savedRange=null;capture();return;
+ }
+ if(['insertUnorderedList','insertOrderedList'].includes(cmd)&&/^(UL|OL)$/.test(selected.tagName)){
+  const tag=cmd==='insertOrderedList'?'OL':'UL';if(selected.tagName!==tag){const next=document.createElement(tag);for(const a of selected.attributes)next.setAttribute(a.name,a.value);next.innerHTML=selected.innerHTML;selected.replaceWith(next);known.get(next.dataset.heUnit).el=next;selected=next;savedRange=null;register();focusContents(next);}capture();return;
+ }
+ if(cmd==='fontSizePx'){const s=getSelection();if(s.isCollapsed){send('notice',{text:'請先選取要改字級的文字。'});return;}document.execCommand('fontSize',false,'7');selected.querySelectorAll('font[size="7"]').forEach(el=>{const span=document.createElement('span');span.style.fontSize=value+'px';span.innerHTML=el.innerHTML;el.replaceWith(span);});}
+ else if(cmd==='formatBlock'&&/^H[1-6]$|^P$|^BLOCKQUOTE$/i.test(value)&&/^(H[1-6]|P|BLOCKQUOTE|DIV)$/.test(block.tagName)){replaceBlock(block,value);}
+ else {
+  if(['insertHTML','insertUnorderedList','insertOrderedList','formatBlock'].includes(cmd)&&!/^(DIV|TD|TH|LI|UL|OL)$/.test(selected.tagName)){
+   const next=document.createElement('div');for(const a of selected.attributes)next.setAttribute(a.name,a.value);next.innerHTML=selected.innerHTML;
+   const s=getSelection(),r=s.rangeCount?s.getRangeAt(0):null;
+   const offset=r?(()=>{const b=document.createRange();b.selectNodeContents(selected);b.setEnd(r.startContainer,r.startOffset);return b.toString().length;})():0;
+   selected.replaceWith(next);known.get(next.dataset.heUnit).el=next;selected=next;register();
+   const walker=document.createTreeWalker(next,NodeFilter.SHOW_TEXT);let n,remaining=offset;while(n=walker.nextNode()){if(remaining<=n.length){const nr=document.createRange();nr.setStart(n,remaining);nr.collapse(true);s.removeAllRanges();s.addRange(nr);break;}remaining-=n.length;}
+  }
+  document.execCommand(cmd,false,value||null);
+ }
+ remember();capture();
+}
+function mode(value){capture();const before=currentPage();editing=value;register();document.documentElement.dataset.heEditing=String(editing);if(editing){for(const id of ['grid','apx','zoom'])document.getElementById(id)?.classList.remove('on');}go(before);send('mode',{editing});}
+function navigate(i){capture();selected=null;selectedBox=null;savedRange=null;document.activeElement?.blur();getSelection()?.removeAllRanges();go(i);}
+function navigationClick(target){
+ const control=target.closest?.('#pgPrev,#pgNext,#pgGrid,#grid .c[data-i],#gClose');if(!control)return false;
+ if(control.id==='pgPrev')navigate(currentPage()-1);
+ else if(control.id==='pgNext')navigate(currentPage()+1);
+ else if(control.id==='pgGrid')document.getElementById('grid')?.classList.toggle('on');
+ else if(control.id==='gClose')document.getElementById('grid')?.classList.remove('on');
+ else{navigate(Number(control.dataset.i));document.getElementById('grid')?.classList.remove('on');}
+ return true;
+}
+ const events=['click','dblclick','mousedown','mouseup','pointerdown','pointerup','touchstart','touchend','contextmenu','wheel','keydown','keyup','keypress','beforeinput','input','paste','cut','drop','dragstart'];
+ for(const type of events)window.addEventListener(type,e=>{
+  if(!editing)return;
+  const chartEditor=e.target?.closest?.('[data-he-chart-editor]');
+  if(chartEditor){if(type==='keydown'&&!e.isComposing&&['ArrowLeft','ArrowRight','ArrowUp','ArrowDown','PageUp','PageDown','Home','End',' ','g','G'].includes(e.key))e.preventDefault();return;}
+  if(type==='keydown'&&!e.isComposing){if((e.ctrlKey||e.metaKey)&&e.key.toLowerCase()==='s'){e.preventDefault();send('save');}if((e.ctrlKey||e.metaKey)&&['z','y'].includes(e.key.toLowerCase())){e.preventDefault();undoRedo(e.key.toLowerCase()==='z'&&!e.shiftKey);}if(e.key==='Escape')document.getElementById('grid')?.classList.remove('on');}
+  if(type==='click'){const nav=e.target.closest?.('#pgPrev,#pgNext,#pgGrid,#grid .c[data-i],#gClose');if(nav){e.preventDefault();e.stopImmediatePropagation();return;}const chart=e.target.closest?.('[data-he-kind="chart"]');if(chart){e.preventDefault();e.stopImmediatePropagation();openChartEditor(chart);return;}}
+  if(['click','dblclick'].includes(type)&&e.target.closest?.('a,button,input,select'))e.preventDefault();
+  if(type==='beforeinput'&&e.inputType==='insertParagraph'){const node=getSelection()?.anchorNode,el=node?.nodeType===1?node:node?.parentElement;if(!el?.closest('li,ol,ul')){e.preventDefault();document.execCommand('insertLineBreak');setTimeout(capture);}}
+  if(type==='paste'){e.preventDefault();document.execCommand('insertText',false,e.clipboardData.getData('text/plain'));setTimeout(capture);}if(type==='input'||type==='cut')setTimeout(capture);if(type==='drop')e.preventDefault();e.stopImmediatePropagation();
+ },true);document.addEventListener('selectionchange',remember);
+window.addEventListener('message',e=>{if(e.source!==parent||e.data?.he!==channel)return;const m=e.data;try{if(m.type==='mode')mode(m.editing);if(m.type==='go')navigate(m.page);if(m.type==='command')command(m.cmd,m.value);if(m.type==='flush'){capture();send('flushed',{request:m.request});}}catch(err){send('notice',{text:err.message});}});
+window.addEventListener('error',e=>send('runtimeError',{text:e.message}));
+window.addEventListener('DOMContentLoaded',()=>{
+ const style=document.createElement('style');style.textContent='html[data-he-editing="true"] [data-he-unit]{cursor:text;user-select:text!important;-webkit-user-select:text!important;outline-offset:3px}html[data-he-editing="true"] [data-he-unit]:hover{outline:1px dashed #278d86}html[data-he-editing="true"] [data-he-unit]:focus{outline:2px solid #278d86}html[data-he-editing="true"] [data-editor-textbox]{outline:1px dashed #278d86;cursor:text}html[data-he-editing="true"] [data-he-unit] *{user-select:text!important;-webkit-user-select:text!important}';document.head.append(style);
+ document.documentElement.dataset.heEditing='true';register();pages=listPages();notifyPage();send('ready',{units:known.size,total:pages.length});
+ let timer;new MutationObserver(()=>{clearTimeout(timer);timer=setTimeout(()=>{register();notifyPage();},30);}).observe(document.body,{childList:true,subtree:true,attributes:true,attributeFilter:['class','aria-hidden']});
+});
+}
+</script>
+<script>'use strict';
+const $=id=>document.getElementById(id);
+const state={source:'',expected:'',file:null,handle:null,dir:null,files:new Map(),urls:[],reverse:new Map(),changes:new Map(),channel:'',page:0,total:0,editing:true,ready:false,saved:'',pending:new Map(),loading:0,settings:{backup:false,theme:'light'}};
+const preferencesKey='html-editor-preferences';
+function applyTheme(theme){state.settings.theme=theme==='dark'?'dark':'light';document.documentElement.dataset.theme=state.settings.theme;const b=$('themeToggle');if(b)b.textContent=state.settings.theme==='dark'?'☀ 日間模式':'☾ 夜間模式';}
+function loadPreferences(){try{const p=JSON.parse(localStorage.getItem(preferencesKey)||'{}');state.settings.backup=p.backup===true;applyTheme(p.theme);}catch{applyTheme('light');}const b=$('backupEnabled');if(b)b.checked=state.settings.backup;}
+function savePreferences(){try{localStorage.setItem(preferencesKey,JSON.stringify(state.settings));}catch{}}
+
+const frame=$('preview');
+function status(text,error=false){$('status').textContent=text;$('status').classList.toggle('error',error);}
+function bytes(text){return new TextEncoder().encode(text).length;}
+function dirty(){if(!state.source)return false;try{return buildOutput()!==state.saved;}catch{return true;}}
+function update(){const loaded=!!state.source;document.querySelectorAll('[data-needs]').forEach(e=>e.disabled=!state.ready);$('saveOriginal').disabled=!state.ready||!state.handle;$('filename').textContent=state.file?.name||'尚未開啟簡報';$('dirty').textContent=loaded?(dirty()?'有未儲存的修改':'已儲存／尚未修改'):'';$('page').textContent=state.total?`${state.page+1} / ${state.total}`:'— / —';$('pageSelect').value=String(state.page);$('prev').disabled=!state.ready||state.page<=0;$('next').disabled=!state.ready||state.page>=state.total-1;$('mode').textContent=state.editing?'▶ 放映檢查':'✎ 回到編輯';$('tools').classList.toggle('inactive',!state.editing);}
+function tell(type,data={}){frame.contentWindow?.postMessage({he:state.channel,type,...data},'*');}
+function undoResource(html){for(const [url,path]of state.reverse)html=html.split(url).join(path);return html;}
+function buildOutput(){if(!state.changes.size)return state.source;const edits=new Map();for(const [id,v]of state.changes)edits.set(id,{html:undoResource(v.html),initial:undoResource(v.initial)});return SourceEngine.patch(state.source,[...edits].map(([id,v])=>({id,...v})));}
+function download(text,name){const url=URL.createObjectURL(new Blob([text],{type:'text/html;charset=utf-8'}));const a=document.createElement('a');a.href=url;a.download=name;document.body.append(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),60000);}
+async function flush(){if(!state.ready)return;const request=crypto.randomUUID();return new Promise((resolve,reject)=>{const timer=setTimeout(()=>{state.pending.delete(request);reject(new Error('簡報尚未回應，請稍候再儲存。'));},5000);state.pending.set(request,()=>{clearTimeout(timer);resolve();});tell('flush',{request});});}
+async function saveAs(){try{await flush();const out=buildOutput();const name=state.file.name.replace(/\.html?$/i,'')+'-已編輯.html';if(window.showSaveFilePicker){const h=await showSaveFilePicker({suggestedName:name,types:[{description:'HTML 簡報',accept:{'text/html':['.html']}}]});if(state.handle&&await h.isSameEntry(state.handle))throw new Error('要存回原檔，請使用「存回原檔」按鈕。');const w=await h.createWritable();await w.write(new Blob([out]));await w.close();status(`已另存 ${h.name}。資料夾版請存到原 HTML 同一層，保留旁邊的圖片與樣式資料夾。`);}else{download(out,name);status('已送出下載。資料夾版請將下載的 HTML 放回原資料夾，與圖片、樣式保持原來位置。');}state.saved=out;update();}catch(e){if(e.name!=='AbortError')status(e.message,true);}}
+async function saveOriginal(){try{await flush();if(!state.handle)throw new Error('此開啟方式沒有原檔寫入權限，請使用「另存新檔」。');const out=buildOutput();if(out===state.expected){status('內容沒有變更，無需寫入。');return;}
+  const existing=await state.handle.getFile();const actual=await readUTF8(existing);if(actual!==state.expected)throw new Error('原檔已被其他程式修改。請先另存新檔，再重新開啟原檔，避免覆蓋他人的修改。');let backupName='';
+  if(state.settings.backup){let dir=state.dir;if(!dir){status('備份功能已開啟，請選擇原 HTML 所在的資料夾以建立備份。');dir=await showDirectoryPicker({mode:'readwrite'});const candidate=await dir.getFileHandle(state.file.name);if(!await candidate.isSameEntry(state.handle))throw new Error('選到的資料夾不是原檔所在位置，尚未寫入任何檔案。');state.dir=dir;}
+    const backups=await dir.getDirectoryHandle('HTMLeditor-backups',{create:true});const stamp=new Date().toISOString().replace(/[:.]/g,'-');backupName=state.file.name.replace(/\.html?$/i,'')+'.'+stamp+'.backup.html';const backup=await backups.getFileHandle(backupName,{create:true});const bw=await backup.createWritable();await bw.write(await existing.arrayBuffer());await bw.close();const check=await state.handle.getFile();if(await readUTF8(check)!==state.expected)throw new Error('建立備份時原檔又有變更，已停止覆寫。');}
+  const w=await state.handle.createWritable();await w.write(new Blob([out]));await w.close();state.expected=out;state.saved=out;status(state.settings.backup?`已存回 ${state.file.name}；備份：HTMLeditor-backups/${backupName}`:`已存回 ${state.file.name}（未建立備份）`);update();
+  }catch(e){if(e.name!=='AbortError')status('未存回原檔：'+e.message,true);}}
+async function readUTF8(file){const raw=new Uint8Array(await file.arrayBuffer());let s;try{s=new TextDecoder('utf-8',{fatal:true,ignoreBOM:true}).decode(raw);}catch{throw new Error('此檔案不是 UTF-8 編碼。為保護原檔，請先用文字工具轉存 UTF-8，再開啟。');}return s;}
+function normalize(path,base=''){try{const u=new URL(path,'https://offline.invalid/'+base);if(u.origin!=='https://offline.invalid')return null;return decodeURIComponent(u.pathname).slice(1);}catch{return null;}}
+async function resources(files,ctx){const map=new Map(),working=new Set();const asset=async path=>{if(map.has(path))return map.get(path);if(working.has(path))return '';const f=files.get(path);if(!f)return null;working.add(path);let blob=f;if(/\.css$/i.test(path)){let css=await f.text();const refs=[...css.matchAll(/url\(\s*['"]?([^)'"\s]+)['"]?\s*\)|@import\s+['"]([^'"]+)['"]/g)];for(const m of refs){const ref=m[1]||m[2];const target=normalize(ref,path);if(target){const url=await asset(target);if(url)css=css.split(ref).join(url);}}blob=new Blob([css],{type:'text/css'});}else if(/\.js$/i.test(path))blob=new Blob([await f.text()],{type:'text/javascript'});const url=await new Promise((resolve,reject)=>{const r=new FileReader();r.onload=()=>resolve(r.result);r.onerror=()=>reject(new Error('無法讀取資源：'+path));r.readAsDataURL(blob);});map.set(path,url);working.delete(path);return url;};for(const p of files.keys())await asset(p);return map;}
+function resolvePreview(source,map,base,ctx){const resolve=p=>{if(/^(data:|blob:|https?:|#|javascript:)/i.test(p)||p.includes('${'))return p;const key=normalize(p,base);const u=key&&map.get(key);if(u){ctx.reverse.set(u,p);return u;}return p;};source=source.replace(/(\b(?:src|href|poster)\s*=\s*)(["'])([^"']+)\2/g,(all,p,q,v)=>p+q+resolve(v)+q);source=source.replace(/url\(\s*(['"]?)([^)'"\s]+)\1\s*\)/g,(all,q,p)=>'url('+q+resolve(p)+q+')');source=source.replace(/(["'])([^"'\r\n<>]+\.(?:png|jpe?g|gif|svg|webp|css|js|woff2?)(?:[?#][^"'\r\n<>]*)?)\1/gi,(all,q,p)=>q+resolve(p)+q);return source;}
+async function load(file,handle=null,files=new Map(),dir=null,base=file.name){
+ if(dirty()&&!confirm('目前有未儲存修改。確定開啟另一份簡報？'))return;
+ const generation=++state.loading;state.ready=false;update();status('正在讀取簡報與本機資源…');
+ const ctx={urls:[],reverse:new Map()};
+ try{const source=await readUTF8(file);if(generation!==state.loading)return;const prepared=SourceEngine.prepare(source);
+ let preview=resolvePreview(prepared.preview,await resources(files,ctx),base,ctx);if(generation!==state.loading){ctx.urls.forEach(u=>URL.revokeObjectURL(u));return;}
+ for(const u of state.urls)URL.revokeObjectURL(u);state.urls=ctx.urls;state.reverse=ctx.reverse;state.changes.clear();state.source=source;state.expected=source;state.saved=source;state.file=file;state.handle=handle;state.dir=dir;state.files=files;state.channel=crypto.randomUUID();state.page=0;state.total=0;state.editing=true;
+ const bridge='('+editorBridge.toString()+')('+JSON.stringify(state.channel)+');';
+ // The bridge must register its capture handlers before the presentation registers any listeners.
+ const inject='<meta http-equiv="Content-Security-Policy" content="default-src data: blob: \'unsafe-inline\' \'unsafe-eval\'; connect-src \'none\'; object-src \'none\'; frame-src \'none\'; form-action \'none\'; base-uri \'none\'"><script>'+bridge.replace(/<\/script/gi,'<\\/script')+'<\/script>';
+ if(/<head\b[^>]*>/i.test(preview))preview=preview.replace(/<head\b[^>]*>/i,m=>m+inject);else preview=inject+preview;
+ $('welcome').hidden=true;frame.hidden=false;frame.srcdoc=preview;status(`正在建立預覽 · 原檔 ${(bytes(source)/1024/1024).toFixed(2)} MB · ${prepared.kind} · 完全離線`);update();
+ }catch(e){ctx.urls.forEach(u=>URL.revokeObjectURL(u));if(generation!==state.loading)return;state.source='';state.ready=false;status('開啟失敗：'+e.message,true);update();}}
+async function openFile(){try{if(window.showOpenFilePicker){const [h]=await showOpenFilePicker({types:[{description:'HTML 簡報',accept:{'text/html':['.html','.htm']}}],multiple:false});await load(await h.getFile(),h);}else $('fileInput').click();}catch(e){if(e.name!=='AbortError')status(e.message,true);}}
+async function walk(dir,prefix='',files=new Map(),handles=new Map()){for await(const [name,h]of dir.entries()){if(name.startsWith('.')||name==='HTMLeditor-backups')continue;const p=prefix+name;if(h.kind==='directory')await walk(h,p+'/',files,handles);else{files.set(p,await h.getFile());handles.set(p,h);}}return{files,handles};}
+function chooseHTML(files,callback){const names=[...files.keys()].filter(n=>/\.html?$/i.test(n));if(!names.length)throw new Error('資料夾裡沒有 HTML 檔案。');if(names.length===1)return callback(names[0]);$('htmlChoices').replaceChildren();for(const n of names){const b=document.createElement('button');b.textContent=n;b.onclick=()=>{$('chooseDialog').close();callback(n);};$('htmlChoices').append(b);}$('chooseDialog').showModal();}
+async function openFolder(){try{if(window.showDirectoryPicker){const dir=await showDirectoryPicker({mode:'readwrite'});status('正在讀取選取的資料夾…');const {files,handles}=await walk(dir);chooseHTML(files,async n=>{let parent=dir;for(const p of n.split('/').slice(0,-1))parent=await parent.getDirectoryHandle(p);await load(files.get(n),handles.get(n),files,parent,n);});}else $('folderInput').click();}catch(e){if(e.name!=='AbortError')status(e.message,true);}}
+$('openFile').onclick=openFile;$('openFolder').onclick=openFolder;$('saveAs').onclick=saveAs;$('saveOriginal').onclick=saveOriginal;
+$('fileInput').onchange=e=>{const f=e.target.files[0];if(f)load(f);e.target.value='';};
+$('folderInput').onchange=e=>{const files=new Map();for(const f of e.target.files){const p=f.webkitRelativePath.split('/').slice(1).join('/');files.set(p,f);}try{chooseHTML(files,n=>load(files.get(n),null,files,null,n));}catch(err){status(err.message,true);}e.target.value='';};
+$('prev').onclick=()=>tell('go',{page:state.page-1});$('next').onclick=()=>tell('go',{page:state.page+1});$('pageSelect').onchange=e=>tell('go',{page:+e.target.value});$('mode').onclick=()=>{state.editing=!state.editing;tell('mode',{editing:state.editing});update();};
+$('tools').onmousedown=e=>{if(e.target.closest('button'))e.preventDefault();};
+$('tools').onclick=e=>{const b=e.target.closest('[data-cmd]');if(b)tell('command',{cmd:b.dataset.cmd,value:b.dataset.value});};
+$('block').onchange=e=>{tell('command',{cmd:'formatBlock',value:e.target.value});e.target.selectedIndex=0;};$('fontSize').onchange=e=>tell('command',{cmd:'fontSizePx',value:Math.max(8,Math.min(240,+e.target.value))});
+$('foreColor').oninput=e=>tell('command',{cmd:'foreColor',value:e.target.value});$('backColor').oninput=e=>tell('command',{cmd:'hiliteColor',value:e.target.value});
+$('insertTable').onclick=()=>$('tableDialog').showModal();$('makeTable').onclick=()=>{const rows=Math.max(1,Math.min(20,+$('rows').value||3)),cols=Math.max(1,Math.min(12,+$('cols').value||3));let h='<table style="border-collapse:collapse;width:100%;font-size:inherit"><tbody>';for(let r=0;r<rows;r++){h+='<tr>';for(let c=0;c<cols;c++)h+='<td style="border:1px solid #94a3b8;padding:8px">文字</td>';h+='</tr>';}h+='</tbody></table>';tell('command',{cmd:'insertHTML',value:h});$('tableDialog').close();};
+$('insertImage').onclick=()=>$('imageInput').click();$('imageInput').onchange=e=>{const file=e.target.files[0];if(!file)return;if(file.size>20*1024*1024){status('圖片超過 20 MB，請先縮小圖片。',true);return;}const r=new FileReader();r.onload=()=>tell('command',{cmd:'insertHTML',value:'<img src="'+r.result+'" alt="插入的圖片" style="max-width:100%;max-height:65vh;height:auto">'});r.readAsDataURL(file);e.target.value='';};
+$('help').onclick=()=>$('helpDialog').showModal();$('settings').onclick=()=>{$('backupEnabled').checked=state.settings.backup;$('settingsDialog').showModal();};$('saveSettings').onclick=()=>{state.settings.backup=$('backupEnabled').checked;savePreferences();$('settingsDialog').close();status(state.settings.backup?'已開啟存回前備份。':'已關閉存回前備份，之後存回不會建立備份。');};$('themeToggle').onclick=()=>{applyTheme(state.settings.theme==='dark'?'light':'dark');savePreferences();};document.querySelectorAll('[data-close]').forEach(b=>b.onclick=()=>b.closest('dialog').close());loadPreferences();
+window.addEventListener('message',e=>{if(e.source!==frame.contentWindow||e.data?.he!==state.channel)return;const m=e.data;if(m.type==='change'){if(m.html===m.initial)state.changes.delete(String(m.id));else state.changes.set(String(m.id),{html:m.html,initial:m.initial});update();}if(m.type==='page'){state.page=m.page;state.total=m.total;const s=$('pageSelect');if(s.options.length!==m.total){s.replaceChildren();for(let i=0;i<m.total;i++)s.add(new Option('第 '+(i+1)+' 頁',String(i)));}update();}if(m.type==='ready'){state.ready=true;status(`已就緒 · ${m.total} 頁 · ${m.units} 個可編輯區塊。點選文字開始修改；外部網路已停用。`);if(!m.units)status('未找到可安全寫回的文字。此簡報的產生方式尚未支援，為保護原檔請勿覆寫。',true);update();}if(m.type==='notice')status(m.text,true);if(m.type==='save')saveOriginal();if(m.type==='flushed'){state.pending.get(m.request)?.();state.pending.delete(m.request);}if(m.type==='runtimeError'){status('簡報執行訊息：'+m.text+'。請檢查資料夾資源是否完整。',true);}});
+window.addEventListener('beforeunload',e=>{if(dirty()){e.preventDefault();e.returnValue='';}});
+window.addEventListener('keydown',e=>{if((e.ctrlKey||e.metaKey)&&e.key.toLowerCase()==='s'){e.preventDefault();saveOriginal();}});
+update();
+</script>
+</body></html>
